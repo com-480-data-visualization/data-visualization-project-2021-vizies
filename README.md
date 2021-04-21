@@ -58,15 +58,39 @@ The first rows are the following:
 | 3 | 2015-01-01 03:00:00+00:00 | 2015-01-01 04:00:00+00:00 | 64182.0 |
 | 4 | 2015-01-01 04:00:00+00:00 | 2015-01-01 05:00:00+00:00 | 63859.0 |
 
- ![alt text](/NRJ_crosstable.png) 
+Then we can extract month and year value and sum up the consumption per day. The result is the following:
+
+ ![alt text](/NRJ_crosstable.png)
+ 
+We can already identify patterns on the heat maps above. First, the energy consumption is higher in winter than in summer. We can see that the November - March period is darker than the April - October period. We can roughly explain this pattern by the heating needs in winter being higher than in summer times. This pattern is also visible on the following plot:
+
+![Monthly energy consumption](/NRJ_month_France.png)
+
+Secondly, we can notice a weekly pattern on the heatmaps, which clearer when we sum up over all months for each year:
+
+![Daily energy consumption](/NRJ_daily_France.png)
+
+The plot above clearly indicates that open days are more energy consuming then weekend days. This can be explained by transport and any business activities.
+
+We can use these patterns in our energy consumption comparison between countries.
 
 ### Related work
 
-
 > - What others have already done with the data?
+> 
+The ENTSO-E transparency platform can be navigated to generate several plots. The platform contains a lot of data including forecasting, exchanges and energy type. The platform is therefore very broad and lacks global consistency to be a meaningful data visualization platform.
+
+Another approach using similar data has been done by [Our world in Data](https://ourworldindata.org/grapher/per-capita-energy-use). The many visualizations done there consist of a world map where each country is coloured by an energy related value, they also include an animation of the evolution of the said quantity over time.
+
 > - Why is your approach original?
+
+Our approach differs from the aforementioned approaches in several ways. It differs from the ENTSO-E transparency platform’s one as we have a general theme, which is comparison of energy consumption per country. We also plan on visualizing energy consumption geographically as done in ‘Our world in data’.
+
+As mentioned, our approach is more similar to the one in ‘Our world in data’ since we aim at visualizing energy consumption using a European map. Our data is however significantly similar to theirs in nature, since our time bins are per hour, ranging over five years, whereas their time bins are of one year, ranging over fifty years. Our approach is therefore different since we will focus on smaller scale patterns, such as the differences between days versus nights, weeks versus weekends and winter versus summers. We will therefore hopefully find cultural patterns of energy consumption between countries.
+
 > - What source of inspiration do you take? Visualizations that you found on other websites or magazines (might be unrelated to your data).
-> - In case you are using a dataset that you have already explored in another context (ML or ADA course, semester project...), you are required to share the report of that work to outline the differences with the submission for this class.
+
+
 
 ## Milestone 2 (7th May, 5pm)
 
