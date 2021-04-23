@@ -82,7 +82,7 @@ Secondly, we can notice a weekly pattern on the heatmaps, which clearer when we 
 
 ![Daily energy consumption](/NRJ_daily_France.png)
 
-The plot above clearly indicates that open days are more energy consuming than weekend days. This can be explained by transport and business activities.
+The plot above clearly indicates that open days are more energy consuming than weekend days. This can be explained by industries and business activities.
 
 We can use these patterns in our energy consumption comparison between countries. indeed, we see a monthly pattern in each country, which is more or less pronounced:
 
@@ -92,7 +92,7 @@ Similarly, we can also notice the weekly pattern spotted for France with other e
 
 ![Day_all](/daily_nrj.png)
 
-We can spot a large gap between high energy consumming countries such as France, Germany, Italy, Great-Britain and Spain and the others. One of our main goal will be to explain this gap by normalisation by population count, industry or tranportation. The choice of these factors are justified with the [2020 Report of energy consumption in France (p.24)](https://www.statistiques.developpement-durable.gouv.fr/sites/default/files/2020-09/datalab_70_chiffres_cles_energie_edition_2020_septembre2020.pdf). The report cleary points out that the most consumming activity sectors are 
+We can spot a large gap between high energy consumming countries such as France, Germany, Italy, Great-Britain and Spain and the others. One of our main goal will be to explain this gap by normalisation by population count, industry or tranportation. The choice of these factors are justified with the [2020 Report of energy consumption in France (p.60)](https://www.statistiques.developpement-durable.gouv.fr/sites/default/files/2020-09/datalab_70_chiffres_cles_energie_edition_2020_septembre2020.pdf). The report cleary points out that the most electricity-consumming activity sectors are housing (37%), tertiary sector (31%) and industry (28%).
 
 ### Related work
 
