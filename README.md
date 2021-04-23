@@ -43,7 +43,7 @@ The target audience is anyone wanting to learn about energy consumption. The pro
 
 ### Exploratory Data Analysis
 
-Our raw data has the following three columns: the first two columns delimit the time lapse in which the energy consumption (in MW)  was measured. Depending on the country, the time lapse in which the energy consumption measured was either 15 minutes, 30 minutes or 1 hour. After verification, this time delta is regular on our data. In order to simplify the data visualization, we decided to uniform all measurements to an hour as explained in the dataset introduction. So we summed up for the countries having a smaller time delta, and obtained 48870 entries per country. We extracted useful summary statistics on the data:
+Our raw data has the following three columns: the first two columns delimit the time lapse in which the energy consumption (in MW)  was measured. Depending on the country, the time lapse in which the energy consumption measured was either 15 minutes, 30 minutes or 1 hour. After verification, this time delta is regular on our data. In order to simplify the data visualization, we decided to uniform all measurements to an hour as explained in the dataset introduction. So we summed up for the countries having a smaller time delta. We extracted useful summary statistics on the data:
 
 |       |       at |       be |       ch |      de |        dk |       es |       fr |       gb |        ie |      it |        lu |       nl |       no |        pt |       se |
 |:------|---------:|---------:|---------:|--------:|----------:|---------:|---------:|---------:|----------:|--------:|----------:|---------:|---------:|----------:|---------:|
