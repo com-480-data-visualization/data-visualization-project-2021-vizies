@@ -18,7 +18,7 @@ Please, fill the following sections about your project.
 *(max. 2000 characters per section)*
 
 ### Dataset 
-(1161)
+*(1161)*
 
 The data we wish to visualize is the energy consumption data of 15 Western European countries, over the period of January 2015 to August 2020. This data has been retrieved by François Raucent and is available on [Kaggle](https://www.kaggle.com/francoisraucent/western-europe-power-consumption), but it originally comes from the [ENTSO-E transparency platform](https://transparency.entsoe.eu). 
 
@@ -29,7 +29,7 @@ The data is clean, an extensive exploratory analysis has been done for the Franc
 
 
 ### Problematic
-(1846)
+*(1846)*
 
 > - What am I trying to show with my visualization?
 
@@ -45,8 +45,7 @@ The target audience is anyone wanting to learn about energy consumption, which i
 
 
 ### Exploratory Data Analysis
-
-(2139)
+*(2139)*
 
 Our raw data has the following three columns: the first two columns delimit the time lapse in which the energy consumption (in MW)  was measured. Depending on the country, the time lapse in which the energy consumption measured was either 15 minutes, 30 minutes or 1 hour. After verification, this time delta is regular on our data. In order to simplify the data visualization, we decided to uniform all measurements to an hour as explained in the dataset introduction. So we summed up for the countries having a smaller time delta. We extracted useful summary statistics on the data:
 
@@ -100,7 +99,7 @@ Similarly, we can also notice the weekly pattern spotted for France with other e
 We can spot a large gap between high energy consumming countries such as France, Germany, Italy, Great-Britain and Spain and the others. One of our main goal will be to explain this gap by normalisation by population count, industry or tranportation. The choice of these factors are justified with the [2020 Report of energy consumption in France (p.60)](https://www.statistiques.developpement-durable.gouv.fr/sites/default/files/2020-09/datalab_70_chiffres_cles_energie_edition_2020_septembre2020.pdf). The report cleary points out that the most electricity-consumming activity sectors are housing (37%), tertiary sector (31%) and industry (28%).
 
 ### Related work
-(1853)
+*(1853)*
 
 > - What others have already done with the data?
 > 
