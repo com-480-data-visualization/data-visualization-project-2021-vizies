@@ -56,6 +56,8 @@ Our raw data has the following three columns: the first two columns delimit the 
 | 75%   |  8104.25 | 10884    |  7357    | 64425   |  4353     | 32028.8  |  61629.8 | 40990    |  3635     | 39411.2 |   544     | 14335    | 17651    |  6411     | 17956.5  |
 | max   | 10833    | 13750    | 18544    | 77853   |  9618     | 41015    | 158000   | 71273    |  5024     | 55157   |   858     | 19323    | 31722    |  8850     | 26714    |
 
+We can see above that some countries have a minimum consumption set to 0, which is very unlikely to be realistic. We will have to check this before any visualisation.
+
 In order to understand how the data is formatted, let us take France energy consumption as an example.
 
 The first rows are the following:
@@ -82,7 +84,13 @@ Secondly, we can notice a weekly pattern on the heatmaps, which clearer when we 
 
 The plot above clearly indicates that open days are more energy consuming than weekend days. This can be explained by transport and business activities.
 
-We can use these patterns in our energy consumption comparison between countries.
+We can use these patterns in our energy consumption comparison between countries. indeed, we see a monthly pattern in each country, which is more or less pronounced:
+
+![Month all](/Monthly_nrj.png)
+
+Similarly, we can also notice the weekly pattern spotted for France with other european countries:
+
+![Day_all](/daily_nrj.png)
 
 ### Related work
 
