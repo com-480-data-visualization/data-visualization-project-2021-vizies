@@ -17,7 +17,8 @@ Please, fill the following sections about your project.
 
 *(max. 2000 characters per section)*
 
-### Dataset
+### Dataset 
+(1161)
 
 The data we wish to visualize is the energy consumption data of 15 Western European countries, over the period of January 2015 to August 2020. This data has been retrieved by François Raucent and is available on [Kaggle](https://www.kaggle.com/francoisraucent/western-europe-power-consumption), but it originally comes from the [ENTSO-E transparency platform](https://transparency.entsoe.eu). 
 
@@ -26,22 +27,26 @@ The 15 countries are  Austria, Belgium, Switzerland, Denmark, Germany, Spain, Fr
 The data is clean, an extensive exploratory analysis has been done for the France dataset with no major issue. The only caveat is that some countries have different time resolutions, so the major preprocessing step would be to make every time resolution equal and aligned, ideally to 1 hour for each country. Time permitting, we would also be interested in comparing our dataset to basic country-wise statistics such as GDP, number of inhabitants, temperature, air pollution as well as type of energy used (percentage of nuclear, coal, petrol, natural gaz etc...).
 
 
+
 ### Problematic
+(1846)
 
 > - What am I trying to show with my visualization?
 
-The goal of the visualization is to be able to compare the energy consumption of different countries. As we can see in the plot below, energy consumption per country highly depends on the number of inhabitants per country. In order to better compare countries we would focus on the energy consumption per capita for and then atrempt to explain why some countries have similar energy consumption. For example, maybe countries geographically close have a similar consumption because of weather and climate similarities, etc..
+The goal of the visualization is to be able to compare the energy consumption of different countries. As we can see in the table below, energy consumption per country highly depends on the number of inhabitants per country. In order to better compare countries we would focus on the energy consumption per capita for and then attempt to explore and explain why some countries have similar energy consumption. For example, maybe countries geographically close have a similar consumption because of weather and climate similarities, etc..
 
 Once the energy consumption comparison is implemented, the next task will be to add the time factor. The possibilities for comparison then dramatically increase. For example, it will be possible to compare how countries' energy consumption changes over the year, over the weekdays, and even during single days. We can also bring more advanced comparisons like how countries further north change their energy consumption during the winter/summer compared to countries further south.
 
 > - Think of an overview for the project, your motivation, and the target audience.
 
-The project would start with vizualising the European map by using visualisation techniques on the map to represent energy consumption. The base interactive part will be to be able to press several countries and displaycompare their energy consumption in a separate vizualisation. The motivation behind the project is to be able to see differences in energy consumption between countries and through that be able to draw conclusions based on differences, or lack thereof.
+The project would start with vizualising the European map by using visualisation techniques on the map to represent energy consumption. The base interactive part will be to be able to press several countries and displaycompare their energy consumption in a separate vizualisation. The motivation behind the project is to be able to see differences in energy consumption between countries and through that be able to draw conclusions based on differences between countries, or lack thereof.
 
-The target audience is anyone wanting to learn about energy consumption. The project will more likely be used to get ideas of what to further explore. For example a user could use this project to notice a difference in energy consumption between countries with higher BNP compared to countries with lower, or countries with higher emissions, and with that in mind further explore that relation on their own.
+The target audience is anyone wanting to learn about energy consumption, which includes people interested in climate change since high energy consumption is known to be correlated with high environmental impact. The project will more likely be used to get ideas of what to further explore. For example a user could use this project to notice a difference in energy consumption between countries with higher BNP compared to countries with lower, or countries with higher emissions, and with that in mind further explore that relation on their own.
 
 
 ### Exploratory Data Analysis
+
+(2139)
 
 Our raw data has the following three columns: the first two columns delimit the time lapse in which the energy consumption (in MW)  was measured. Depending on the country, the time lapse in which the energy consumption measured was either 15 minutes, 30 minutes or 1 hour. After verification, this time delta is regular on our data. In order to simplify the data visualization, we decided to uniform all measurements to an hour as explained in the dataset introduction. So we summed up for the countries having a smaller time delta. We extracted useful summary statistics on the data:
 
@@ -95,21 +100,21 @@ Similarly, we can also notice the weekly pattern spotted for France with other e
 We can spot a large gap between high energy consumming countries such as France, Germany, Italy, Great-Britain and Spain and the others. One of our main goal will be to explain this gap by normalisation by population count, industry or tranportation. The choice of these factors are justified with the [2020 Report of energy consumption in France (p.60)](https://www.statistiques.developpement-durable.gouv.fr/sites/default/files/2020-09/datalab_70_chiffres_cles_energie_edition_2020_septembre2020.pdf). The report cleary points out that the most electricity-consumming activity sectors are housing (37%), tertiary sector (31%) and industry (28%).
 
 ### Related work
+(1853)
 
 > - What others have already done with the data?
 > 
-The ENTSO-E transparency platform can be navigated to generate several plots. The platform contains a lot of data including forecasting, exchanges between countries, and energy type. The platform is therefore very broad and lacks global consistency to be a meaningful data visualization platform.
+The ENTSO-E transparency platform can be navigated to generate several plots. The platform contains a lot of data including forecasting, exchanges between countries, and energy type. The platform is therefore very broad and lacks global consistency to be a meaningful data visualization.
 
 Another approach using similar data has been done by [Our world in Data](https://ourworldindata.org/grapher/per-capita-energy-use). The many visualizations done there consist of a world map where each country is coloured by an energy related value, they also include an animation of the evolution of the said quantity over time.
 
 > - Why is your approach original?
 
-Our approach differs from the aforementioned approaches in several ways. It differs from the ENTSO-E transparency platform’s one as we have a general theme, which is comparison of energy consumption per country. We also plan on visualizing energy consumption geographically as done in [Our world in Data](https://ourworldindata.org/grapher/per-capita-energy-use).
+Our approach differs from the aforementioned approaches in several ways. It differs from the ENTSO-E transparency platform’s one as we have a general theme, which is comparison of energy consumption per country. The platform also does not have a map based vizualisation, which we plan on doing.
 
-As mentioned, our approach is more similar to the one in [Our world in Data](https://ourworldindata.org/grapher/per-capita-energy-use), since we aim at visualizing energy consumption using a European map. Our data is however significantly different to theirs in nature, since our time bins are per hour, ranging over five years, whereas their time bins are of one year, ranging over fifty years. Our approach is therefore different since we will focus on smaller time scale patterns, such as the differences between days versus nights, weeks versus weekends and winter versus summers. We will therefore hopefully find cultural patterns of energy consumption between countries.
+As mentioned, our approach is more similar to the one in [Our world in Data](https://ourworldindata.org/grapher/per-capita-energy-use), since we aim at visualizing energy consumption using a European map. Our data is however significantly different to theirs in nature, since our time bins are per hour, ranging over five years, whereas their time bins are of one year, ranging over fifty years. This will allow us to focus on smaller time scale patterns, such as the differences between days versus nights, weeks versus weekends and winter versus summers. 
 
 > - What source of inspiration do you take? Visualizations that you found on other websites or magazines (might be unrelated to your data).
-
 
 The data we possess is highly periodic across time, it would be interesting to find a data visualization that highlights this periodicity. One approach carried in [Observable seasonal spirals](https://observablehq.com/@yurivish/seasonal-spirals) is to wrap the data around a circle. In the study, their data is wrapped as a spiral around a circle where one ‘wrap’ corresponds to one year. This avenue could be interesting to explore, with an interactive component being the duration of one ‘wrap ‘.
 The simple yet effective data visualization of energy usage over years done in [Our world in Data](https://ourworldindata.org/grapher/per-capita-energy-use) could be a nice way to represent our data on a map.
