@@ -24,67 +24,26 @@
 
 <body>
 
-<nav>
-	<ul class="width-limited">
-		<li><a href="index.html">Home</a></li>
-		<li><a href="description.html">Description</a></li>
-		<li><a href="data.html">Data</a></li>
-		<li><a href="team.html">Team</a></li>
-	</ul>
-</nav>
-
 <header class="title-row">
 	<h1> European energy consumption </h1>
 </header>
 
-<main class="width-limited">
-	<h4>Introduction</h4>
-	<p>
-		The data we wish to visualize is the energy consumption data of 15 Western European countries, over the period of January 2015 to August 2020.
-	</p>
+<div class = "content-row">
+	<div class = "content-column">
+		<img src="options_example.png" class="options" alt="Simply Easy Learning">
+	</div>
 
-	<h4>How to use</h4>
-	<p>
-	Here we would tell you how to interact with the plot below.
-	Sadly, it is not interactive at this stage of the project.
-	Please imagine that the plot is interactive and that clicking on it
-	activates captivating animations.
-	</p>
-</main>
-
-<div class="width-limited">
-	<h3>Map</h3>
-	<p>First sketch of our map using the leaflet package</p>
-
-<div id="map" style="width: 700px; height: 600px;"></div>
-<style>#map { width: 800px; height: 500px; }
-.info { padding: 6px 8px; font: 14px/16px Arial, Helvetica, sans-serif; background: white; background: rgba(255,255,255,0.8); box-shadow: 0 0 15px rgba(0,0,0,0.2); border-radius: 5px; } .info h4 { margin: 0 0 5px; color: #777; }
-.legend { text-align: left; line-height: 18px; color: #555; } .legend i { width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7; }</style>
-<script type="text/javascript" src="us-states-example.js"></script>
-<script type="text/javascript" src="europe-all.js"></script>
-
-<script type="text/javascript">
-
- 	var map = L.map('map').setView([49.65, 4.922], 4);
-
-	L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-		maxZoom: 18,
-		attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-			'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-		id: 'mapbox/light-v9',
-		tileSize: 512,
-		zoomOffset: -1
-	}).addTo(map);
-
-	var geojson = L.geoJson(EuropeStatesData).addTo(map);
- </script>
-
+	<div class = "content-column">
+		<div id="map" class="map"></div>
+	</div>
+	
+	<div class = "content-column">
+		<img src="graph_example.png" class = "graph" alt="Simply Easy Learning">
+	</div>
 </div>
+<img src="time-line_example.png" class="time_line" alt="Simply Easy Learning">
 
-
-<footer></footer>
-
-<script src="provided.js"></script>
-<script src="exercise.js"></script>
+<script type="text/javascript" src="europe-all.js"></script>
+<script src="main.js"></script>
 </body>
 </html>
