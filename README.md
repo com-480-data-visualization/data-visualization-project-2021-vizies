@@ -146,7 +146,7 @@ The picture above consists of our minimal viable product, to which we hope to ad
 
 **Minimum:** A simple title to introduce the webpage. 
 
-**Improvement:** Not currently shown in the picture, we want it to allow the reader to decide what normalization to use, next to the tile should be written ‘by  Capita GDP Pollution  Weather…’. The user can pick at most one of the words (in this case the user clicked on GDP), and if the user has not picked any country it the data will remain unnormalized. This is not currently presented in the picture but will replace the ‘Normalization’ drop down menu.
+**Improvement:** We want to allow the reader to decide what normalization to use, next to the tile should be written ‘by  Capita GDP Pollution  Weather…’. The user can pick at most one of the words (in this case the user clicked on GDP), and if the user has not picked any country it the data will remain unnormalized. 
 
 **Tools:** Tools such as buttons will also be essential for the normalization part.
 
@@ -169,7 +169,7 @@ The picture above consists of our minimal viable product, to which we hope to ad
 ## **Graph/Plot section:**
 
 **Minimum:** Once countries and a period is selected, the graph section is meant to give a clear comparison of the selected country’s data over the selected period.  Our minimum is to at least have the ‘circular graph’ plot described below.
-    -	Circular graph (see picture above): the circular graph is like a usual graph but  has a circular x-axis, the goal is to see periodicity in the data. The duration of one turn around the circle will originally be fixed to one month, but this will be changed in the ‘improvements’ below, this will replace the ‘Time’ drop down menu on the picture above. There will be one curve per country showing the average consumption during that Month of each country’s energy consumption over the selected period.  The goal of this is to be able to visualize the periodicity of the data.
+    -	Circular graph (see picture above): the circular graph is like a usual graph but  has a circular x-axis, the goal is to see periodicity in the data. The duration of one turn around the circle will originally be fixed to one month, but this will be changed in the ‘improvements’ below. There will be one curve per country showing the average consumption during that Month of each country’s energy consumption over the selected period.  The goal of this is to be able to visualize the periodicity of the data.
 
 **Improvement:** Although only one plot is presented in the picture, we are planning on having three different plots, next to the plot, there will be three small buttons (possibly with icons!) next to the plots, which the user can click on to switch from one plot to the other. The three plots with improvements are the following:
      -	Histogram plot: one horizontal bar per selected country, the size of the bar represents the total energy consumed by that country over the period. The data here is not different to the one on the map, but the bars will be ranked from biggest on top to smallest on the bottom, which allows a clearer comparison per countries than possible on the map.
