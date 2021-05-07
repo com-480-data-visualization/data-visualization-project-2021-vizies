@@ -140,7 +140,8 @@ The picture above consists of our minimal viable product, to which we hope to ad
 
 
 **Title section:** 
-<u>Minimum<u>: A simple title to introduce the webpage. 
+
+Minimum: A simple title to introduce the webpage. 
 Improvement: Not currently shown in the picture, we want it to allow the reader to decide what normalization to use, next to the tile should be written ‘by  Capita GDP Pollution  Weather…’. The user can pick at most one of the words (in this case the user clicked on GDP), and if the user has not picked any country it the data will remain unnormalized. This is not currently presented in the picture but will replace the ‘Normalization’ drop down menu.
 Tools: Tools such as buttons will also be essential for the normalization part.
 
