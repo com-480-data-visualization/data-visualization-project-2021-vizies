@@ -13,15 +13,15 @@ function test_plot(){
         tileSize: 512,
         zoomOffset: -1
     }).addTo(map);
-    
+
     console.log(EuropeStatesData)
 
     // Draw map of countries with energy
     var geojson = L.geoJson(EuropeStatesData, {
-        style: function(feature) { 
+        style: function(feature) {
             switch (feature.properties.FIPS) {
                 case 'SW' : return {color: "blue",
-                                    fillColor: "#ff0000",
+                                    fillColor: "#FF9933",
                                     weight: 2};
                 case 'AU' : return {color: "green",
                                     fillColor: "yellow",
@@ -30,7 +30,7 @@ function test_plot(){
                                     weight: 0.5};
                 case 'PL' : return {color: "yellow",
                                     weight: 0.5};
-                default : return {color: "red",
+                default : return {color: "#FF9933",
                                 weight: 0.5};
             }
         }
