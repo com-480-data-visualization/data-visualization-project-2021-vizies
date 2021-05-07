@@ -128,7 +128,36 @@ See html file?
 **• List the tools that you will use for each visualization and which (past or future) lectures you will need.**
 
 **• Break down your goal into independent pieces to implement. Try to design a core visualization (minimal viable product) that will be required at the end. Then list extra ideas (more creative or challenging) that will enhance the visualization but could be dropped without endangering the meaning of the project.**
-
+Our core visualization will consist of three parts: a map, a time line and a circular graph (like the html page currently shows). 
+The map will display a map of Europe and our 15 countries will have a color based on how much energy that country has consumed. 
+Each country can be chosen to compare with another country. 
+That is done by clicking both countries, to indicate if a country is selected their border color will be changed into a distinct color.
+The chosen countries data will then be displayed in the circular graph.
+We will use a circular graph in order to show periodic data. 
+Our idea is to give the user a clear understanding of how the data changes over time in periods.
+For example if the user would compare two countries within two years we would like our graph to show the average of those years periodically (e.g. per month). 
+We belive that the user then will clearly be able to ompare countries and get an understanding of the difference in consumption between the two countries, both in actual consumption and consumption over time. 
+The timeline will be used to set the interval in which the graph is showing data. 
+However this is just our minimal viable product. We intent to add alot of functionality, graphs and animations to make the visualization more fun, informative and user-friendly. 
+Below we will list the future functionality that will be added after the minimal product is completed.
+The listing will be splitted into 3 categories functionality, animations, creative
+First we have functionality.
+• Add normalizations, since countries have a widely difference in consumption we want to add the possibility to normalize our data based on different categories (population, weather, etc.). The user can choose which normalization in the title of the page. The title will say "European Energy Consumption by" followed by the possible categories to normalized by where the categories are greyed out and you choose normalization by pressing the text of that category. 
+• Add time scales to the circular graph. Since a user might want to be able to do the same periodical comparision but per day, week or hour we will add the possibility to change the timescale. Above the circular graph it will be stated which time scale that is being used and there will be 4 dots underneath that text (with one representing the current timescale a bit bigger). Then to change the timescale the user simply clicks on of the other dots. 
+• Add histogram and curve graph. The user might want to do other comparisions, either just the size of the consumption or the evolution of the consumption. Therefore we will add 2 more graphs that can display the data (histogram, and curve). To switch between the different graphs we will use the same principle with dots as in the time scale case. But put them to the right of the graph vertical. To let the user see that graphs can be change by either pressing the dot or scrolling with the mouse in the graph area. The dots also indicates that the user can only display one graph at a time, not scrolling and showing two halfs. 
+• Bend the time-line and make it zoomable. Since we have added the possibility to see the evolution of the consumption a user might want to see specific weeks or even days. Therefore our time-line with 5 years is not enough. We will have to add a zoom functionality to the time-line. That when you hold you mouse somewhere on the time-line and scroll the time line will zoom in/out towards the points you have your mouse. To make this more fun and intuitively we will also curve the time-line to give it more focus. 
+When the functionality is implemented we would like to focus on animations, making the visualization more fun and the flow more seemingly.
+• Add a title screen, and only present map first. We would like to add a title screen which states "European Energy Consumption by GDP, population, weather" (with GDP, population, weather greyed out) and arrows in the button pointing up to make the user scroll/drag up the title screen. To then only displaying the map and time-scale over the whole screen (no graph) and instructions to press countries for comparision. When a user presses a country the map should in an animation slide to the left and the graph should apear. That way we will show the user parts of our visualization one step at a time, giving an instructive feeling without making a full tutorial. 
+• Add animation when a user changes normalization. When the user change visualisation the whole data will change, we therefore want that to be seen in an effective way. Therefore we will add an animation for that transition. We don't want to reload the data we want it to smoothly change into the new values. Making the map change color smoothly and the graph update in a smooth way.
+• Add animation when a new country is pressed. When the user press a new country to compare the graph shall be updated by getting a new value. We want to add a smooth transition that the new line in the graphs comes up without it looking like everything is reloaded. 
+• Add fun aninamtion when switching graph. When the user switches between our graphs we want to display the switch in a fun interactive way. The animations will be between the circular graph and the curve graph, and the curve graph and the histogram. Animation between curve and circular will be that the circle gets "cut open" and then unfolds (and vice versa). For the animation between the histogram and the graph curve, we will color the area in the graph then "flatten" the graph and drag a line on the right to create the histogram (and vice versa). 
+If there is time after all of the animations are completed aswell we have added a list of fun creative ideas that can be added. Those are listed below. 
+• Enrich the data even further by adding how much energy each country exchange energy with eachother. Add which type of energy the countries use in a graph. 
+• The ability to "play" the data. That being able to play the consumtion over time in the map. Making the colors change based on the consumption. 
+• Automate data exploring. That a user can choose which normalizations that they want to compare and then our visualization will show a sequence of graphs to give the user the information needed to draw meaningful conclussions.
+• Add more filtering options to the time-line. To be able through an easy interacive way filter tha data even more with the timeline. For example only choosing evey winter or only daytime etc. That filtering would be done by the time-line to then update all the data. 
+• Add more mapviews that display the energy consumption with other things than just color. For example that the normalization is done by population. Then we transform the map into changing country size by population or consumtion to get a clearer view on the consumption. 
+• Add 3D-tube graph. The idea is to display the circular graph in a more creative way by creating a 3-D tube that the user can turn to see the data. 
 
 Functional project prototype review.
 
