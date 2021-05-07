@@ -189,7 +189,7 @@ When the functionality is implemented we would like to focus on animations, maki
 
 **Tools**: This section requires tools for smoothly transitioning from one state of the webpage to another.
 
-# **Ambitious ideas**
+## **Ambitious ideas**
 Once the animations are also completed, we have several ideas of what could come next, this includes:
 -	Further enrich the date: more normalizations, looking at how the energy is produced in given countries, or simply more normalizations. 
 -	Deepen the data exploration: giving a quick tutorial on what interesting things to look at in the data are, for example comparing richer to poorer countries, or comparing warmer and colder ones.
