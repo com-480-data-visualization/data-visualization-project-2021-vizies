@@ -176,6 +176,8 @@ The picture above consists of our minimal viable product, to which we hope to ad
      -	Evolution curve: one curve per country, where the x-axis is time and the y-axis is the energy consumed during that time. The goal is to see and compare the time evolution of the energy consumption of different countries.
      -	Circular: The same concept as above can be adapted to a different length of the circle, we hope to give the user four options: Day, Week, Month or Year. Another extension would be to not look at the average, but to allow the curve of each country to wrap around the circle several time (this is however experimental and might not lead to a nice plot).
 
+**Tools:** The tools needed for this part range on several d3 libraries. We will need tools to plot the data, and particularly for the circular plot. We will also need tools if we decide to design our own icons for the normalization and time options.
+
 
 ## **Animation:**  
 
@@ -185,6 +187,8 @@ When the functionality is implemented we would like to focus on animations, maki
 
 **Transitions:** Since our visualization is based on different points of view of the same data, the switch in perspective (in normalization or time scale) should therefore happen as smoothly as possible, this includes a smooth change of colour and a smooth transition between plots. Another transition point  we wish to make smooth is when the user selects or un-selects a country. For example passing from the circular graph to the evolution graph can be done by cutting the circle and flattening it; and passing from curve to histogram can be done by smoothly transforming the area under each curve to the bar associated to that curve.
 
+**Tools**: This section requires tools for smoothly transitioning from one state of the webpage to another.
+
 # **Ambitious ideas**
 Once the animations are also completed, we have several ideas of what could come next, this includes:
 -	Further enrich the date: more normalizations, looking at how the energy is produced in given countries, or simply more normalizations. 
@@ -192,6 +196,8 @@ Once the animations are also completed, we have several ideas of what could come
 -	The ability to ‘play’ the data over time.
 -	Add more filtering options to the time line (see only day-time data, or only weekend data etc...). Although this can partially be done with the circular graph.
 -	We have also been thinking of vizualising the data not only on a circle, but also for example on a 2D tube: the length of the tube is a month, and the day data is wrapped around the tube (one wrap around is one month). But this might be too ambitious and would perhaps not add much to the analysis….
+
+
 
 
 
