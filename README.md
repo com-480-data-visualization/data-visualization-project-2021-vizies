@@ -142,7 +142,7 @@ The goal of our visualization is to be able to intuitively explore the energy co
 The picture above consists of our minimal viable product, to which we hope to add several components.  We first identify and describe the independent pieces of the visualization, which we decompose into minimum product, and improvements. We finally describe some additional ideas which are more creative and challenging, but that we hope we’ll have time to implement!
 
 
-##**Title section:** 
+## **Title section:** 
 
 **Minimum:** A simple title to introduce the webpage. 
 
