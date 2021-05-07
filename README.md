@@ -144,7 +144,7 @@ Minimum: A simple title to introduce the webpage.
 Improvement: Not currently shown in the picture, we want it to allow the reader to decide what normalization to use, next to the tile should be written ‘by  Capita GDP Pollution  Weather…’. The user can pick at most one of the words (in this case the user clicked on GDP), and if the user has not picked any country it the data will remain unnormalized. This is not currently presented in the picture but will replace the ‘Normalization’ drop down menu.
 Tools: Tools such as buttons will also be essential for the normalization part.
 
-**Map section: **
+**Map section:**
 
 Minimum: The map is the core of our visualization. It displays a map of Europe, where the 15 countries for which we have data are coloured by how much energy they consumed. Since our goal is to be able to compare different countries, we decided to have a feature where the user can pick one or more countries by simply clicking on it. When a country is clicked, the country’s border becomes bold and coloured with a distinct colour (in the example above, Sweden and Austria are picked, with colours blue and green respectively). The event listener is linked to the graph on the right, which will show the data of only the picked countries, but more on this below!
 Improvement: Try different maps and different ways to view the map such as cartograms.
