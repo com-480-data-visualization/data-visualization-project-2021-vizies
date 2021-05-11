@@ -1,44 +1,46 @@
 
-function test_plot(){
-    console.log('TEST1')
+class Main {
 
-   var map = L.map('map').setView([49.65, 4.922], 4);
-
-   // Draw full map
-   L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-        maxZoom: 18,
-        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-            'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-        id: 'mapbox/light-v9',
-        tileSize: 512,
-        zoomOffset: -1
-    }).addTo(map);
-
-    console.log(EuropeStatesData)
-
-    // Draw map of countries with energy
-    var geojson = L.geoJson(EuropeStatesData, {
-        style: function(feature) {
-            switch (feature.properties.FIPS) {
-                case 'SW' : return {color: "blue",
-                                    fillColor: "#FF9933",
-                                    weight: 2};
-                case 'AU' : return {color: "green",
-                                    fillColor: "yellow",
-                                    weight: 2};
-                case 'BE' : return {color: "yellow",
-                                    weight: 0.5};
-                case 'PL' : return {color: "yellow",
-                                    weight: 0.5};
-                default : return {color: "#FF9933",
-                                weight: 0.5};
-            }
+    ParseData(d) {
+        return {Date : new Date(d.DATE), 
+                AT: parseInt(d.at),
+                BE: parseInt(d.be),
+                CH: parseInt(d.ch),
+                DE: parseInt(d.de),
+                DK: parseInt(d.dk),
+                ES: parseInt(d.es),
+                FR: parseInt(d.fr),
+                GB: parseInt(d.gb),
+                IE: parseInt( d.ie),
+                IT: parseInt(d.it),
+                LU: parseInt(d.lu),
+                NL: parseInt(d.nl),
+                NO: parseInt(d.no),
+                PT: parseInt(d.pt),
+                SE: parseInt(d.se)
         }
-    }).addTo(map).on('click', onClick);;
+    }
 
+    constructor() {
+        /* ===== CONSTANST ===== */
+        const CONSUMPTION_DATA_PATH = 'data/energy_consumption.csv';
+        const MAP_DATA_PATH = 'data/europe_map.json';
+        const MAP_ID = 'map';
+        const GRAPH_ID = 'graph';
+        const TIMELINE_ID = 'timeline';
 
-    function onClick() {
-        console.log("Click")
+        const energy_consumption_promise = d3.csv(CONSUMPTION_DATA_PATH, this.ParseData);
+        
+        const map_promise = d3.json(MAP_DATA_PATH)
+
+        Promise.all([energy_consumption_promise,map_promise]).then((results) => {
+            let energy_consumption = results[0];
+            let europe_map_data = results[1];
+
+            new MapPlot(MAP_ID, energy_consumption, europe_map_data);
+            new PeriodicPlot(GRAPH_ID, energy_consumption);
+            new Timeline(TIMELINE_ID, energy_consumption);
+        })
     }
 }
 
@@ -53,7 +55,5 @@ function whenDocumentLoaded(action) {
 }
 
 whenDocumentLoaded(() => {
-    test_plot();
-	//plot_object = new MapPlot('map-plot');
-	// plot object is global, you can inspect it in the dev-console
+    new Main();
 });

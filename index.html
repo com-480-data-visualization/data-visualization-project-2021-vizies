@@ -13,15 +13,6 @@
 	<link rel="stylesheet" href="style.css">
 </head>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-   integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-   crossorigin=""/> <!-- Inclusion of the leaflet CSS file -->
-
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-	    integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-	    crossorigin=""></script> <!--Inclusion of the Leaflet JavaScript-->
-
-
 <body>
 
 <header class="title-row">
@@ -29,21 +20,28 @@
 </header>
 
 <div class = "content-row">
-	<div class = "content-column">
-		<img src="options_example.png" class="options" alt="Simply Easy Learning">
-	</div>
 
 	<div class = "content-column">
 		<div id="map" class="map"></div>
 	</div>
 	
 	<div class = "content-column">
-		<img src="graph_example.png" class = "graph" alt="Simply Easy Learning">
+		<div id="graph">
+			<img src="images/graph_example.png" class = "graph" alt="Simply Easy Learning">
+		</div>
 	</div>
 </div>
-<img src="time-line_example.png" class="time_line" alt="Simply Easy Learning">
 
-<script type="text/javascript" src="europe-all.js"></script>
+<div id="timeline">
+	<img src="images/time-line_example.png" class="timeline" alt="Simply Easy Learning">
+</div>
+
+<script src="lib/d3.min.js"></script>
+<script src="lib/leaflet.js"></script>
+<link rel="stylesheet" href="lib/leaflet.css">
+<script src="periodic_plot.js"></script>
+<script src="map.js"></script>
+<script src="timeline.js"></script>
 <script src="main.js"></script>
 </body>
 </html>
