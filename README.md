@@ -78,25 +78,25 @@ The first rows are the following:
 
 Then we can extract month and year value and sum up the consumption per day. The result is the following:
 
- ![alt text](/NRJ_crosstable.png)
+ ![alt text](/images/NRJ_crosstable.png)
  
 We can already identify patterns on the heat maps above. First, the energy consumption is higher in winter than in summer. We can see that the November - March period is darker than the April - October period. We can roughly explain this pattern by the heating needs in winter being higher than in summer times. This pattern is also visible on the following plot:
 
-![Monthly energy consumption](/NRJ_month_France.png)
+![Monthly energy consumption](/images/NRJ_month_France.png)
 
 Secondly, we can notice a weekly pattern on the heatmaps, which clearer when we sum up over all months for each year:
 
-![Daily energy consumption](/NRJ_daily_France.png)
+![Daily energy consumption](/images/NRJ_daily_France.png)
 
 The plot above clearly indicates that open days are more energy consuming than weekend days. This can be explained by industries and business activities.
 
 We can use these patterns in our energy consumption comparison between countries. indeed, we see a monthly pattern in each country, which is more or less pronounced:
 
-![Month all](/Monthly_nrj.png)
+![Month all](/images/Monthly_nrj.png)
 
 Similarly, we can also notice the weekly pattern spotted for France with other european countries:
 
-![Day_all](/daily_nrj.png)
+![Day_all](/images/daily_nrj.png)
 
 We can spot a large gap between high energy consumming countries such as France, Germany, Italy, Great-Britain and Spain and the others. One of our main goal will be to explain this gap by normalisation by population count, industry or tranportation. The choice of these factors are justified with the [2020 Report of energy consumption in France (p.60)](https://www.statistiques.developpement-durable.gouv.fr/sites/default/files/2020-09/datalab_70_chiffres_cles_energie_edition_2020_septembre2020.pdf). The report cleary points out that the most electricity-consumming activity sectors are housing (37%), tertiary sector (31%) and industry (28%).
 
