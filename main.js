@@ -1,6 +1,9 @@
 
 class Main {
 
+    mapObject;
+    plotObject;
+
     ParseData(d) {
         return {Date : new Date(d.DATE), 
                 AT: parseInt(d.at),
@@ -21,6 +24,11 @@ class Main {
         }
     }
 
+    UpdateData(startDate, endDate) {
+        this.mapObject.updateMap(startDate, endDate);
+        this.plotObject.updatePlot(startDate, endDate);
+    }
+
     constructor() {
         /* ===== CONSTANST ===== */
         const CONSUMPTION_DATA_PATH = 'data/energy_consumption.csv';
@@ -37,9 +45,9 @@ class Main {
             let energy_consumption = results[0];
             let europe_map_data = results[1];
 
-            new MapPlot(MAP_ID, energy_consumption, europe_map_data);
-            new PeriodicPlot(GRAPH_ID, energy_consumption);
-            new Timeline(TIMELINE_ID, energy_consumption);
+            this.mapObject = new MapPlot(MAP_ID, energy_consumption, europe_map_data);
+            this.plotObject = new PeriodicPlot(GRAPH_ID, energy_consumption);
+            new Timeline(TIMELINE_ID, energy_consumption, this);
         })
     }
 }

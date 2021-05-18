@@ -517,4 +517,10 @@ class PeriodicPlot {
 			let svg_radar1 = RadarChart(".graph", data, radarChartOptions);
 
 		}
+
+
+
+		updatePlot(startDate, endDate) {
+			console.log("Inside Plot with startDate: " + startDate.getMonth() + " and endDate: " + endDate.getMonth())
+		  }
 	}

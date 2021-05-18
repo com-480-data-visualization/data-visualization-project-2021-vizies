@@ -121,4 +121,8 @@ class MapPlot {
         console.log(energy_consumption[0])
 
     }
+
+    updateMap(startDate, endDate) {
+      console.log("Inside Map with startDate: " + startDate.getMonth() + " and endDate: " + endDate.getMonth())
+    }
 }

@@ -6,20 +6,21 @@ class Timeline {
     height = 20;
     margin = {top: 5, bottom: 5, left: 10, right: 10}; 
 
-    constructor(svg_element_id, energy_consumption) {
+    constructor(svg_element_id, energy_consumption, main) {
         /* ===== Constants ===== */        
         const brushPlacement = {top: 15, bottom: 17, left: 20, right: 200};
         const brushInterval = d3.timeMonth.every(1);
 
         const dates = energy_consumption.map(d => d.Date);
-
+        const minDate = new Date(d3.min(dates).setDate(d3.min(dates).getDate() -1));
+        const maxDate = new Date(d3.max(dates).setDate(d3.max(dates).getDate() -1)); 
 
         const svg = d3.select('div#'+svg_element_id)
                        .append('svg')
                        .attr("viewBox", [this.margin.left, this.margin.top, this.width-this.margin.right, this.height-this.margin.bottom]);
 
         const x = d3.scaleTime()
-                    .domain([new Date("2014-12-31"), new Date("2019-12-31")])
+                    .domain([minDate, maxDate])
                     .rangeRound([this.margin.left, this.width-this.margin.right]);
 
         const yearLabels = d3.axisTop(x)
@@ -47,7 +48,8 @@ class Timeline {
         const brush = d3.brushX()
                         .extent([[brushPlacement.left, brushPlacement.top], [brushPlacement.right, brushPlacement.bottom]])
                         .on("start", brushed)
-                        .on("brush", brushed);
+                        .on("brush", brushed)
+                        .on("end", brushEnd);
 
         function brushed(event) {
             if (!event.sourceEvent) { return; } 
@@ -63,6 +65,26 @@ class Timeline {
         
             d3.select(this).call(brush.move, d1.map(x));
             placeHadles();
+
+            // Send d1 to Map and Plot
+        }
+
+        function brushEnd(event) {
+            if (!event.selection) {return; }
+
+            const d0 = event.selection.map(x.invert);
+            const d1 = d0.map(brushInterval.round);
+
+            sendDates(d1);
+        }
+
+        function sendDates(d1) {
+            const startDatePadding = -3;
+            const endDatePadding = 9;
+            const startDate = new Date(d1[0].setMonth(d1[0].getMonth() + startDatePadding));
+            const endDate = new Date(d1[1].setMonth(d1[1].getMonth() + endDatePadding)-1);
+            
+            main.UpdateData(startDate, endDate);
         }
 
         function placeHadles() {
