@@ -2,8 +2,11 @@
 class MapPlot {
 
     constructor(svg_element_id, energy_consumption, europe_map_data) {
+        const MapAttributes = this;
+        this.energy_consumption = energy_consumption;
+        this.europe_map_data = europe_map_data;
 
-        var map = L.map(svg_element_id, {scrollWheelZoom: false,
+        this.map = L.map(svg_element_id, {scrollWheelZoom: false,
           zoomControl: false, dragging:false, doubleClickZoom: false, zoomSnap:0.1}).setView([51, 9]).setZoom(4.3);
 
         // Draw full map
@@ -14,72 +17,64 @@ class MapPlot {
             id: 'mapbox/light-v9',
             tileSize: 512,
             zoomOffset: -1
-        }).addTo(map);
+        }).addTo(this.map);
 
-        var countries = ["AT", "BE", "CH", "DE", "DK", "ES", "FR", "GB", "IE", "LT", "LU", "NL", "NO", "PT", "SE"];
+        // Unnecessary
+        this.countries = ["AT", "BE", "CH", "DE", "DK", "ES", "FR", "GB", "IE", "LT", "LU", "NL", "NO", "PT", "SE"];
 
-        // control that shows state info on hover -> CSS clash!
-        	var info = L.control();
+        this.info = L.control();
 
-        	info.onAdd = function (map) {
-        		this._div = L.DomUtil.create('div', 'info');
-        		this.update();
-        		return this._div;
-        	};
-
-        	info.update = function (feat) {
-        		this._div.innerHTML = '<h4>Energy consumption</h4>' +  (feat ?
-        			'<b>' + feat.properties.NAME + '</b><br />' + energy_consumption[0][feat.properties.ISO2] + ' MWh '
-        			: 'Hover over a state');
-        	};
-
-        	info.addTo(map);
-
-        function getColor(d) {
-          return d > 40000 ? '#900000' :
-            d > 20000  ? '#AC2308' :
-            d > 10000  ? '#C84610' :
-            d > 5000  ? '#E56A19' :
-            d > 2000   ? '#E98218' :
-            d > 1000   ? '#ED9B18' :
-            d > 500   ? '#F1B416' :
-                        '#F1CD5C';
-                      }
-
-    // Function to associate energy consumption value with fill in
-    function style_country(features) {
-      return {
-          fillColor: getColor(energy_consumption[0][features.properties.ISO2]),
-          weight: 2,
-          opacity: 1,
-          color: 'white',
-          dashArray: '1',
-          fillOpacity: 0.7
+        this.info.onAdd = function (map) {
+        	this._div = L.DomUtil.create('div', 'info');
+        	this.update();
+        	return this._div;
         };
-      }
 
-    // Function for interaction
-    function highlightFeature(e) {
-        var layer = e.target;
-        info.update(layer.feature);
+        this.info.update = function (feat) {
+        	this._div.innerHTML = '<h4>Energy consumption</h4>' +  (feat ?
+        		'<b>' + feat.properties.NAME + '</b><br />' + energy_consumption[0][feat.properties.ISO2] + ' MWh '
+        		: 'Hover over a state');
+        };
 
-        layer.setStyle({
+        this.info.addTo(this.map);
+
+        // Function to associate energy consumption value with fill in
+        function style_country(features) {
+        return {
+            fillColor: MapAttributes.getColor(MapAttributes.energy_consumption[0][features.properties.ISO2]),
             weight: 2,
-            color: '#666',
-            dashArray: '',
+            opacity: 1,
+            color: 'white',
+            dashArray: '1',
             fillOpacity: 0.7
-        });
-        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+            };
+        }
+
+        // Function for interaction
+        function highlightFeature(e) {
+            var layer = e.target;
+            MapAttributes.info.update(layer.feature);
+
+            layer.setStyle({
+                weight: 2,
+                color: '#666',
+                dashArray: '',
+                fillOpacity: 0.7
+            });
+
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
                       layer.bringToFront();
-                  }
-              }
-
-      function resetHighlight(e) {
-            geojson.resetStyle(e.target);
-            info.update();
             }
+        }
 
-      function onEachFeature(feature, layer) {
+        // Function to highlight countries with mouse cursor
+        function resetHighlight(e) {
+            MapAttributes.geojson.resetStyle(e.target);
+            MapAttributes.info.update();
+        }
+
+        // Main function for highlighting countries and clicking options
+        function onEachFeature(feature, layer) {
       		layer.on({
       			mouseover: highlightFeature,
       			mouseout: resetHighlight
@@ -88,10 +83,10 @@ class MapPlot {
         }
 
         // Draw map of countries with energy
-        var geojson = L.geoJson(europe_map_data, {
+        this.geojson = L.geoJson(europe_map_data, {
             style: style_country,
             onEachFeature: onEachFeature
-        }).addTo(map);
+        }).addTo(this.map);
 
         var legend = L.control({position: 'bottomright'});
 
@@ -102,27 +97,63 @@ class MapPlot {
           labels = [],
           from, to;
 
-    // loop through our density intervals and generate a label with a colored square for each interval
-      for (var i = 0; i < grades.length; i++) {
-           from = grades[i];
-			     to = grades[i + 1];
+        // loop through our density intervals and generate a label with a colored square for each interval
+        for (var i = 0; i < grades.length; i++) {
+            from = grades[i];
+            to = grades[i + 1];
             labels.push(
-        				'<i style="background:' + getColor(from + 1) + '"></i> ' +
+        				'<i style="background:' + MapAttributes.getColor(from + 1) + '"></i> ' +
         				from + (to ? '&ndash;' + to : '+'));
-        		}
+        }
 
-        		div.innerHTML = labels.join('</br>');
-        		return div;
-};
+            div.innerHTML = labels.join('</br>');
+            return div;
+        };
 
-      legend.addTo(map);
+        legend.addTo(this.map);
 
         // Test some shit -> check console
         console.log(energy_consumption[0])
-
     }
 
-    updateMap(startDate, endDate) {
-      console.log("Inside Map with startDate: " + startDate.getMonth() + " and endDate: " + endDate.getMonth())
-    }
+    getColor(d) {
+          return d > 40000 ? '#900000' :
+            d > 20000  ? '#AC2308' :
+            d > 10000  ? '#C84610' :
+            d > 5000  ? '#E56A19' :
+            d > 2000   ? '#E98218' :
+            d > 1000   ? '#ED9B18' :
+            d > 500   ? '#F1B416' :
+                        '#F1CD5C';
+                      }
+
+    updateMap(start, end) {
+
+        // Get entries from start to end dates
+            const data = this.energy_consumption.filter(row => { //filter the time
+                return row.Date.getTime() >= start.getTime() && row.Date.getTime() < end.getTime()
+            });
+
+          // Get months for each entry
+            const data_month = data.map(x => ({...x, month: new Date(x.Date).getMonth()}));
+
+            let data_average = [];
+            // Computes the sum for each month
+            const data_month_sum = data_month.reduce((acc, cur) => {
+                acc[cur.day] = acc[cur.day] + cur.value || cur.value; // increment or initialize to cur.value
+                return acc;
+            }, {});
+
+            // For now, plots the first entry in [start, end]
+            const data_test = this.energy_consumption.filter(row => { //filter the time
+                return row.Date.getTime() >= start.getTime() && row.Date.getTime() <= start.getTime()
+            });
+            console.log(data_test)
+            this.geojson.setStyle( {fillColor: this.getColor(data_test[0][this.europe_map_data.features.properties.ISO2]),
+                weight: 2,
+                opacity: 1,
+                color: 'white',
+                dashArray: '1',
+                fillOpacity: 0.7});
+        }
 }
