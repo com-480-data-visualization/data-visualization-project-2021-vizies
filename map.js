@@ -40,7 +40,7 @@ class MapPlot {
 
         // Function to associate energy consumption value with fill in
         function style_country(features) {
-        return {
+            return {
             fillColor: MapAttributes.getColor(MapAttributes.energy_consumption[0][features.properties.ISO2]),
             weight: 2,
             opacity: 1,
@@ -128,16 +128,17 @@ class MapPlot {
                       }
 
     updateMap(start, end) {
+            const MapAttributes = this;
 
         // Get entries from start to end dates
-            const data = this.energy_consumption.filter(row => { //filter the time
+            const data = MapAttributes.energy_consumption.filter(row => { //filter the time
                 return row.Date.getTime() >= start.getTime() && row.Date.getTime() < end.getTime()
             });
 
           // Get months for each entry
             const data_month = data.map(x => ({...x, month: new Date(x.Date).getMonth()}));
 
-            let data_average = [];
+            //let data_average = [];
             // Computes the sum for each month
             const data_month_sum = data_month.reduce((acc, cur) => {
                 acc[cur.day] = acc[cur.day] + cur.value || cur.value; // increment or initialize to cur.value
@@ -145,15 +146,21 @@ class MapPlot {
             }, {});
 
             // For now, plots the first entry in [start, end]
-            const data_test = this.energy_consumption.filter(row => { //filter the time
+            const data_test = MapAttributes.energy_consumption.filter(row => { //filter the time
                 return row.Date.getTime() >= start.getTime() && row.Date.getTime() <= start.getTime()
             });
             console.log(data_test)
-            this.geojson.setStyle( {fillColor: this.getColor(data_test[0][this.europe_map_data.features.properties.ISO2]),
-                weight: 2,
-                opacity: 1,
-                color: 'white',
-                dashArray: '1',
-                fillOpacity: 0.7});
+
+            function country_style(feat) {
+                    return {
+                        fillColor: MapAttributes.getColor(data_test[0][feat.properties.ISO2]),
+                        weight: 2,
+                        opacity: 1,
+                        color: 'white',
+                        dashArray: '1',
+                        fillOpacity: 0.7
+                    }
+            }
+            this.geojson.setStyle(country_style);
         }
 }
