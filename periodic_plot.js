@@ -1,7 +1,7 @@
 
 class PeriodicPlot {
 
-    constructor(svg_element_id, energy_consumption, europe_map_data) {
+    constructor(svg_element_id, energy_consumption, start=energy_consumption[0].Date, end=energy_consumption[8500].Date) {
 
 
 		/////////////////////////////////////////////////////////
@@ -15,6 +15,11 @@ class PeriodicPlot {
 		const sin = Math.sin;
 		const cos = Math.cos;
 		const HALF_PI = Math.PI / 2;
+
+		this.energy_consumption = energy_consumption
+
+		//this.start =energy_consumption[0].Date;
+		//this.end =energy_consumption[100].Date
 
 		const RadarChart = function RadarChart(parent_selector, data, options) {
 			//Wraps SVG text - Taken from http://bl.ocks.org/mbostock/7555321
@@ -206,7 +211,7 @@ class PeriodicPlot {
 				.attr("class", "radarWrapper");
 
 			//Append the backgrounds
-			blobWrapper
+			/*blobWrapper
 				.append("path")
 				.attr("class", "radarArea")
 				.attr("d", d => radarLine(d.axes))
@@ -227,7 +232,7 @@ class PeriodicPlot {
 					parent.selectAll(".radarArea")
 						.transition().duration(200)
 						.style("fill-opacity", cfg.opacityArea);
-				});
+				});*/
 
 			//Create the outlines
 			blobWrapper.append("path")
@@ -400,8 +405,8 @@ class PeriodicPlot {
 				}
 			];
 
-			data = get_data(energy_consumption, ["France", "Sweden", "Germany"], energy_consumption[0].Date, energy_consumption[10000].Date, "Month")
-
+//#################### This is Jacob's code #############
+//#################### #################### #############
 			function month_transform(month_name){
 				const month_dic = {"January" :0,
 							"February" : 1,
@@ -490,8 +495,8 @@ class PeriodicPlot {
 			}
 
 
-			
-
+			this.get_data = get_data;
+			this.RadarChart =RadarChart;
 
 
 
@@ -512,15 +517,23 @@ class PeriodicPlot {
 				color: d3.scaleOrdinal().range(["#26AF32", "#762712"]),
 				format: '.0f'
 			};
+			this.radarChartOptions = radarChartOptions;
+
 
 			// Draw the chart, get a reference the created svg element :
+			data = get_data(energy_consumption, ["France", "Sweden", "Germany"], start, end, "Month")
 			let svg_radar1 = RadarChart(".graph", data, radarChartOptions);
 
-		}
 
+	}//constructor
 
 
 		updatePlot(startDate, endDate) {
-			console.log("Inside Plot with startDate: " + startDate.getMonth() + " and endDate: " + endDate.getMonth())
+			console.log("Inside Plot with startDate: " + startDate + " and endDate: " + endDate)
+
+			const data = this.get_data(this.energy_consumption, ["France", "Sweden", "Germany"], startDate, endDate, "Month")
+			let svg_radar1 = this.RadarChart(".graph", data, this.radarChartOptions);
+
+
 		  }
 	}
