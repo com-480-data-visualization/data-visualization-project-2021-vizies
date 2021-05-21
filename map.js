@@ -19,7 +19,7 @@ class MapPlot {
             zoomOffset: -1
         }).addTo(this.map);
 
-        // Unnecessary
+        // Unnecessary ?
         this.countries = ["AT", "BE", "CH", "DE", "DK", "ES", "FR", "GB", "IE", "LT", "LU", "NL", "NO", "PT", "SE"];
 
         this.info = L.control();
@@ -46,7 +46,7 @@ class MapPlot {
             opacity: 1,
             color: 'white',
             dashArray: '1',
-            fillOpacity: 0.7
+            fillOpacity: 0.9
             };
         }
 
@@ -59,7 +59,7 @@ class MapPlot {
                 weight: 2,
                 color: '#666',
                 dashArray: '',
-                fillOpacity: 0.7
+                fillOpacity: 0.9
             });
 
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
@@ -83,7 +83,7 @@ class MapPlot {
         }
 
         // Draw map of countries with energy
-        this.geojson = L.geoJson(europe_map_data, {
+        this.geojson = L.geoJson(this.europe_map_data, {
             style: style_country,
             onEachFeature: onEachFeature
         }).addTo(this.map);
@@ -93,7 +93,8 @@ class MapPlot {
         legend.onAdd = function (map) {
 
         var div = L.DomUtil.create('div', 'info legend'),
-          grades = [0, 500, 1000, 2000, 5000, 10000, 20000, 40000],
+          grades = [0, 800, 900, 1000, 2000, 3000, 4000, 5000,
+              6000, 7000, 8000, 9000, 10000, 20000, 30000],
           labels = [],
           from, to;
 
@@ -113,18 +114,41 @@ class MapPlot {
         legend.addTo(this.map);
 
         // Test some shit -> check console
-        console.log(energy_consumption[0])
+        //console.log(energy_consumption[0])
     }
 
     getColor(d) {
-          return d > 40000 ? '#900000' :
-            d > 20000  ? '#AC2308' :
-            d > 10000  ? '#C84610' :
-            d > 5000  ? '#E56A19' :
-            d > 2000   ? '#E98218' :
-            d > 1000   ? '#ED9B18' :
-            d > 500   ? '#F1B416' :
-                        '#F1CD5C';
+          return d > 30000 ? '#340000' :
+              d > 25000 ? '#400408' :
+              d > 20000 ? '#4c080f' :
+              d > 15000 ? '#590f13' :
+              d > 10000 ? '#661516' :
+              d > 9500  ? '#731c18' :
+              d > 9000  ? '#80231a' :
+              d > 8500  ? '#8d2b1c' :
+              d > 8000  ? '#9a331d' :
+              d > 7500  ? '#a73b1e' :
+              d > 7000  ? '#b4441f' :
+              d > 6500  ? '#c04d1e' :
+              d > 6000  ? '#cd561d' :
+              d > 5500  ? '#d9601c' :
+              d > 5000  ? '#e56a19' :
+              d > 4500  ? '#e7751c' :
+              d > 4000  ? '#ea7f20' :
+              d > 3500  ? '#ec8925' :
+              d > 3000  ? '#ee922b' :
+              d > 2500  ? '#f09c31' :
+              d > 2000  ? '#f2a538' :
+              d > 1500  ? '#f4af3f' :
+              d > 1000  ? '#f5b847' :
+              d > 950   ? '#f7c14f' :
+              d > 900   ? '#f9ca58' :
+              d > 850   ? '#fad361' :
+              d > 800   ? '#fcdc6a' :
+              d > 750   ? '#fde474' :
+              d > 700   ? '#fee778' :
+              d > 650   ? '#ffed7e' :
+                  '#f9e1a2';
                       }
 
     updateMap(start, end) {
@@ -135,30 +159,38 @@ class MapPlot {
                 return row.Date.getTime() >= start.getTime() && row.Date.getTime() < end.getTime()
             });
 
-          // Get months for each entry
-            const data_month = data.map(x => ({...x, month: new Date(x.Date).getMonth()}));
+          // Get months for each entry -> not necessary
+            const data_month = data.map(x => ({...x, Month: new Date(x.Date).getMonth()}));
 
-            //let data_average = [];
-            // Computes the sum for each month
-            const data_month_sum = data_month.reduce((acc, cur) => {
-                acc[cur.day] = acc[cur.day] + cur.value || cur.value; // increment or initialize to cur.value
+            // Computes the sum for Austria (AT) each month
+            const count = data.length
+
+            const data_sum = data.reduce((acc, cur) => {
+                for(var key of Object.keys(cur)){
+                    acc[key] = acc[key] + cur[key] || cur[key];
+                }
+                /*acc.AT = acc.AT + cur.AT || cur.AT;// increment or initialize to cur
+                acc.BE = acc.BE + cur.BE || cur.BE;
+                acc['DE'] = acc['DE'] + cur['DE'] || cur['DE']; */
                 return acc;
-            }, {});
+            }, {})
+
+            const data_average = Object.keys(data_sum).reduce((acc, key) => {acc[key] = data_sum[key]/count; return acc; }, {})
+            console.log(data_average)
 
             // For now, plots the first entry in [start, end]
             const data_test = MapAttributes.energy_consumption.filter(row => { //filter the time
                 return row.Date.getTime() >= start.getTime() && row.Date.getTime() <= start.getTime()
             });
-            console.log(data_test)
 
             function country_style(feat) {
                     return {
-                        fillColor: MapAttributes.getColor(data_test[0][feat.properties.ISO2]),
+                        fillColor: MapAttributes.getColor(data_average[feat.properties.ISO2]),
                         weight: 2,
                         opacity: 1,
                         color: 'white',
                         dashArray: '1',
-                        fillOpacity: 0.7
+                        fillOpacity: 0.9
                     }
             }
             this.geojson.setStyle(country_style);
