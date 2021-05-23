@@ -50,11 +50,13 @@ class MapPlot {
             };
         }
 
-        // Function for interaction
+        // Function for mouseover interaction
         function highlightFeature(e) {
             var layer = e.target;
             MapAttributes.info.update(layer.feature);
-            if (storeLayerClicked === null || storeLayerClicked._leaflet_id !== e.target._leaflet_id){
+
+            // Change the style with mouseover only if was not selected before by click action
+            if (storeLayerClicked.length === 0 || !(storeLayerClicked.includes(e.target._leaflet_id))){
                 layer.setStyle({
                     weight: 2,
                     color: '#666',
@@ -67,9 +69,9 @@ class MapPlot {
             }
         }
 
-        // Function to highlight countries with mouse cursor
+        // Function to reset style countries when mouse off the country
         function resetHighlight(e) {
-            if (storeLayerClicked === null || storeLayerClicked._leaflet_id !== e.target._leaflet_id) {
+            if (storeLayerClicked.length === 0 || !(storeLayerClicked.includes(e.target._leaflet_id))) {
             MapAttributes.geojson.resetStyle(e.target);
         }
             MapAttributes.info.update();
@@ -78,19 +80,25 @@ class MapPlot {
         // Function to send the clicked countries
         function sendCountries(e){
             const layer = e.target;
-            main.UpdateData2(e.target.feature.properties.ISO2);
-            console.log(e.target.feature.properties.ISO2);
 
-            if (storeLayerClicked !== null) {
+            if (storeLayerClicked.includes(layer._leaflet_id)) {
                 MapAttributes.geojson.resetStyle(layer) // Reset style
+                const index = storeLayerClicked.indexOf(e.target._leaflet_id);
+                if (index > -1) {
+                    storeLayerClicked.splice(index, 1);
+                };
+                main.RemoveCountry(e.target.feature.properties.ISO2)
             }
-            layer.setStyle({
-                weight: 2,
-                color: '#FF0000',
-                dashArray: '',
-                fillOpacity: 0.9
-            });
-            storeLayerClicked = layer;
+            else {
+                layer.setStyle({
+                    weight: 2,
+                    color: '#FF0000',
+                    dashArray: '',
+                    fillOpacity: 0.9
+                });
+                storeLayerClicked.push(layer._leaflet_id);
+                main.AddCountry(e.target.feature.properties.ISO2);
+            }
 
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
                       layer.bringToFront();
@@ -98,7 +106,7 @@ class MapPlot {
         }
 
         // Main function for highlighting countries and clicking options
-        var storeLayerClicked = null;
+        var storeLayerClicked = [];
         function onEachFeature(feature, layer) {
       		layer.on({
                 click: sendCountries,
@@ -196,7 +204,7 @@ class MapPlot {
             }, {})
 
             const data_average = Object.keys(data_sum).reduce((acc, key) => {acc[key] = data_sum[key]/count; return acc; }, {})
-            console.log(data_average)
+            //console.log(data_average)
 
             // For now, plots the first entry in [start, end]
             const data_test = MapAttributes.energy_consumption.filter(row => { //filter the time

@@ -28,7 +28,10 @@ class Main {
         this.mapObject.updateMap(startDate, endDate);
         //this.plotObject.updatePlot(startDate, endDate);
     }
-    UpdateData2(country) {
+    AddCountry(country) {
+        //this.plotObject.updatePlot(country);
+    }
+    RemoveCountry(country){
         //this.plotObject.updatePlot(country);
     }
 
