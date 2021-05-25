@@ -29,13 +29,13 @@ class Main {
 
     UpdateData(startDate, endDate) {
         this.mapObject.updateMap(startDate, endDate);
-        //this.plotObject.updatePlot(startDate, endDate);
+        this.plotObject.updatePlot(startDate, endDate);
     }
-    AddCountry(country, color) {
-        //this.plotObject.updatePlot(country);
+    AddCountry(country) {
+        this.plotObject.updatePlotAddCountry(country);
     }
     RemoveCountry(country){
-        //this.plotObject.updatePlot(country);
+        this.plotObject.updatePlotRemoveCountry(country);
     }
 
     constructor() {
