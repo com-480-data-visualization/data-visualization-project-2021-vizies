@@ -202,20 +202,20 @@ class MapPlot {
                   '#f9e1a2';
                       }
 
-    updateMap(start, end) {
+    updateMap(newData) {
             const MapAttributes = this;
 
         // Get entries from start to end dates
-            const data = MapAttributes.energy_consumption.filter(row => { //filter the time
+            /*const data = MapAttributes.energy_consumption.filter(row => { //filter the time
                 return row.Date.getTime() >= start.getTime() && row.Date.getTime() < end.getTime()
-            });
+            });*/
 
           // Get months for each entry
-            const data_month = data.map(x => ({...x, Month: new Date(x.Date).getMonth()}));
+            const data_month = newData.map(x => ({...x, Month: new Date(x.Date).getMonth()}));
 
             const count = data_month.length
 
-            const data_sum = data.reduce((acc, cur) => {
+            const data_sum = newData.reduce((acc, cur) => {
                 for(var key of Object.keys(cur)){
                     acc[key] = acc[key] + cur[key] || cur[key];
                 }
@@ -226,9 +226,9 @@ class MapPlot {
             //console.log(data_average)
 
             // For now, plots the first entry in [start, end]
-            const data_test = MapAttributes.energy_consumption.filter(row => { //filter the time
+            /*const data_test = MapAttributes.energy_consumption.filter(row => { //filter the time
                 return row.Date.getTime() >= start.getTime() && row.Date.getTime() <= start.getTime()
-            });
+            });*/
 
             function country_style(feat) {
                     return { fillColor: MapAttributes.getColor(data_average[feat.properties.ISO2])};

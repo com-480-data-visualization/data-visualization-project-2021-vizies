@@ -333,7 +333,7 @@ class PeriodicPlot {
 			}
 
 
-			function get_data(energy_consumption, country_list, start, end, time_scale){
+			function get_data(energy_consumption, country_list, time_scale){
 				let initial_value = country_list.map(country => {
 					const new_country = {};
 					new_country["name"] = country;
@@ -354,10 +354,8 @@ class PeriodicPlot {
 				});
 
 
-				return energy_consumption.filter(row => { //filter the time
-					return row.Date.getTime() >= start.getTime() && row.Date.getTime()<end.getTime()})
-				    .reduce(reducer, initial_value) //sums up over all of the months
-				    .map(average)
+				return energy_consumption.reduce(reducer, initial_value) //sums up over all of the months
+				    					 .map(average)
 			}
 
 
@@ -398,12 +396,10 @@ class PeriodicPlot {
 	}//constructor
 
 
-		updatePlot(startDate, endDate) {
-			this.start=startDate;
-			this.end=endDate;
-			console.log("Inside Plot with startDate: " + startDate + " and endDate: " + endDate)
+		updatePlot(newData) {
+			this.energy_consumption = newData
 
-			const data = this.get_data(this.energy_consumption, this.country_list, startDate, endDate, "Month")
+			const data = this.get_data(this.energy_consumption, this.country_list, "Month")
 			let svg_radar1 = this.RadarChart(".graph", data, this.radarChartOptions);
 		  }
 
@@ -413,7 +409,7 @@ class PeriodicPlot {
 			}
 			this.country_list.push(country);
 			//console.log(this.country_list);
-			const data = this.get_data(this.energy_consumption, this.country_list, this.start, this.end, "Month")
+			const data = this.get_data(this.energy_consumption, this.country_list, "Month")
 			this.RadarChart(".graph", data, this.radarChartOptions);
 			this.default=false;
 		}
@@ -421,7 +417,7 @@ class PeriodicPlot {
 		updatePlotRemoveCountry(country){
 			this.country_list = this.country_list.filter(c => {
 				return (c.localeCompare(country))});
-			const data = this.get_data(this.energy_consumption, this.country_list, this.start, this.end, "Month")
+			const data = this.get_data(this.energy_consumption, this.country_list, "Month")
 			if (data.length ==0) {
 				d3.selectAll(".radarWrapper").remove()
 			}
