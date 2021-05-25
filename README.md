@@ -137,7 +137,7 @@ See html file?
 
 The goal of our visualization is to be able to intuitively explore the energy consumption data of several European countries across time and geography, with different normalization options (by capita, by GDP etc…).  We would like to compare different countries, through highlighting total consumption, evolution of consumption and periodicity of consumption.  Below is a picture of the current version of the website, a first implementation can be found in the html file of the repo.
 
-![Example_website](/website_pic.png)
+![Example_website](/images/website_pic.png)
 
 The picture above consists of our minimal viable product, to which we hope to add several components.  We first identify and describe the independent pieces of the visualization, which we decompose into minimum product, and improvements. We finally describe some additional ideas which are more creative and challenging, but that we hope we’ll have time to implement!
 
