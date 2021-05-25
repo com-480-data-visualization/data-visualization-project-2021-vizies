@@ -16,12 +16,18 @@ class PeriodicPlot {
 		const cos = Math.cos;
 		const HALF_PI = Math.PI / 2;
 
-		this.energy_consumption = energy_consumption
+		this.energy_consumption = energy_consumption;
+		this.country_list =["FR", "DE", "SE"];
+		this.default = true;
+		this.start=start;
+		this.end = end;
+
 
 		//this.start =energy_consumption[0].Date;
 		//this.end =energy_consumption[100].Date
 
 		const RadarChart = function RadarChart(parent_selector, data, options) {
+
 			//Wraps SVG text - Taken from http://bl.ocks.org/mbostock/7555321
 			const wrap = (text, width) => {
 			  text.each(function() {
@@ -67,6 +73,27 @@ class PeriodicPlot {
 			 unit: '',
 			 legend: false
 			};
+
+			if (this.default){
+				console.log({
+			    AT: cfg.color("AT"),
+                BE: cfg.color("BE"),
+                CH: cfg.color("CH"),
+                DE: cfg.color("DE"),
+                DK: cfg.color("DK"),
+                ES: cfg.color("ES"),
+                FR: cfg.color("FR"),
+                GB: cfg.color("GB"),
+                IE: cfg.color("IE"),
+                IT: cfg.color("IT"),
+                LU: cfg.color("LU"),
+                NL: cfg.color("NL"),
+                NO: cfg.color("NO"),
+                PT: cfg.color("PT"),
+                SE: cfg.color("SE")})
+
+			}
+
 
 			//Put all of the options into a variable called cfg
 			if('undefined' !== typeof options){
@@ -210,36 +237,13 @@ class PeriodicPlot {
 				.enter().append("g")
 				.attr("class", "radarWrapper");
 
-			//Append the backgrounds
-			/*blobWrapper
-				.append("path")
-				.attr("class", "radarArea")
-				.attr("d", d => radarLine(d.axes))
-				.style("fill", (d,i) => cfg.color(i))
-				.style("fill-opacity", cfg.opacityArea)
-				.on('mouseover', function(d, i) {
-					//Dim all blobs
-					parent.selectAll(".radarArea")
-						.transition().duration(200)
-						.style("fill-opacity", 0.1);
-					//Bring back the hovered over blob
-					d3.select(this)
-						.transition().duration(200)
-						.style("fill-opacity", 0.7);
-				})
-				.on('mouseout', () => {
-					//Bring back all blobs
-					parent.selectAll(".radarArea")
-						.transition().duration(200)
-						.style("fill-opacity", cfg.opacityArea);
-				});*/
 
 			//Create the outlines
 			blobWrapper.append("path")
 				.attr("class", "radarStroke")
 				.attr("d", function(d,i) { return radarLine(d.axes); })
 				.style("stroke-width", cfg.strokeWidth + "px")
-				.style("stroke", (d,i) => cfg.color(i))
+				.style("stroke", (d,i) => cfg.color(d.name))
 				.style("fill", "none")
 				.style("filter" , "url(#glow)");
 
@@ -255,87 +259,6 @@ class PeriodicPlot {
 				.style("fill", (d) => cfg.color(d.id))
 				.style("fill-opacity", 0.8);
 
-			/////////////////////////////////////////////////////////
-			//////// Append invisible circles for tooltip ///////////
-			/////////////////////////////////////////////////////////
-
-			//Wrapper for the invisible circles on top
-			const blobCircleWrapper = g.selectAll(".radarCircleWrapper")
-				.data(data)
-				.enter().append("g")
-				.attr("class", "radarCircleWrapper");
-
-			//Append a set of invisible circles on top for the mouseover pop-up
-			blobCircleWrapper.selectAll(".radarInvisibleCircle")
-				.data(d => d.axes)
-				.enter().append("circle")
-				.attr("class", "radarInvisibleCircle")
-				.attr("r", cfg.dotRadius * 1.5)
-				.attr("cx", (d,i) => rScale(d.value) * cos(angleSlice*i - HALF_PI))
-				.attr("cy", (d,i) => rScale(d.value) * sin(angleSlice*i - HALF_PI))
-				.style("fill", "none")
-				.style("pointer-events", "all")
-				.on("mouseover", function(d,i) {
-					tooltip
-						.attr('x', this.cx.baseVal.value - 10)
-						.attr('y', this.cy.baseVal.value - 10)
-						.transition()
-						.style('display', 'block')
-						.text(Format(d.value) + cfg.unit);
-				})
-				.on("mouseout", function(){
-					tooltip.transition()
-						.style('display', 'none').text('');
-				});
-
-			const tooltip = g.append("text")
-				.attr("class", "tooltip")
-				.attr('x', 0)
-				.attr('y', 0)
-				.style("font-size", "12px")
-				.style('display', 'none')
-				.attr("text-anchor", "middle")
-				.attr("dy", "0.35em");
-
-			if (cfg.legend !== false && typeof cfg.legend === "object") {
-				let legendZone = svg.append('g');
-				let names = data.map(el => el.name);
-				if (cfg.legend.title) {
-					let title = legendZone.append("text")
-						.attr("class", "title")
-						.attr('transform', `translate(${cfg.legend.translateX},${cfg.legend.translateY})`)
-						.attr("x", cfg.w - 70)
-						.attr("y", 10)
-						.attr("font-size", "12px")
-						.attr("fill", "#404040")
-						.text(cfg.legend.title);
-				}
-				let legend = legendZone.append("g")
-					.attr("class", "legend")
-					.attr("height", 100)
-					.attr("width", 200)
-					.attr('transform', `translate(${cfg.legend.translateX},${cfg.legend.translateY + 20})`);
-				// Create rectangles markers
-				legend.selectAll('rect')
-				  .data(names)
-				  .enter()
-				  .append("rect")
-				  .attr("x", cfg.w - 65)
-				  .attr("y", (d,i) => i * 20)
-				  .attr("width", 10)
-				  .attr("height", 10)
-				  .style("fill", (d,i) => cfg.color(i));
-				// Create labels
-				legend.selectAll('text')
-				  .data(names)
-				  .enter()
-				  .append("text")
-				  .attr("x", cfg.w - 52)
-				  .attr("y", (d,i) => i * 20 + 9)
-				  .attr("font-size", "11px")
-				  .attr("fill", "#737373")
-				  .text(d => d);
-			}
 			return svg;
 		}//RadarChart
 
@@ -352,61 +275,6 @@ class PeriodicPlot {
 			////////////////////////// Data and Data Fetching //////////////////////////////
 			//////////////////////////////////////////////////////////////
 
-
-
-			var data = [
-				{ name: "France",
-					 axes:[
-						{axis:"January",value:0},
-						{axis:"February",value:0.28},
-						{axis:"March",value:0.29},
-						{axis:"April",value:0.17},
-						{axis:"May",value:0.22},
-						{axis:"June",value:0.02},
-						{axis:"Jully",value:0.21},
-						{axis:"August",value:0.50},
-						{axis:"September",value:0.22},
-						{axis:"October",value:0.28},
-						{axis:"November",value:0.29},
-						{axis:"December",value:0.17},
-					]			
-				} ,
-				{ name: "Germany",
-					axes: [
-						{axis:"January",value:0.32},
-						{axis:"February",value:0.18},
-						{axis:"March",value:0.54},
-						{axis:"April",value:0.12},
-						{axis:"May",value:0.22},
-						{axis:"June",value:0.91},
-						{axis:"Jully",value:0.05},
-						{axis:"August",value:0.3},
-						{axis:"September",value:0.56},
-						{axis:"October",value:0.29},
-						{axis:"November",value:0.39},
-						{axis:"December",value:0.17},	
-					]
-				} ,
-				{ name: "Sweden",
-					axes : [
-						{axis:"January",value:0.42},
-						{axis:"February",value:0.8},
-						{axis:"March",value:0.21},
-						{axis:"April",value:0.17},
-						{axis:"May",value:0.32},
-						{axis:"June",value:0.12},
-						{axis:"Jully",value:0.21},
-						{axis:"August",value:0.38},
-						{axis:"September",value:0.22},
-						{axis:"October",value:0.38},
-						{axis:"November",value:0.29},
-						{axis:"December",value:0.09},	
-					]
-				}
-			];
-
-//#################### This is Jacob's code #############
-//#################### #################### #############
 			function month_transform(month_name){
 				const month_dic = {"January" :0,
 							"February" : 1,
@@ -424,34 +292,23 @@ class PeriodicPlot {
 				return month_dic[month_name]
 			}
 
-			function country_name_transform(country_name){
-				const country_dic = {
-					"France": "FR",
-					"Sweden": "SE",
-					"Germany": "DE"
-				}
-				return country_dic[country_name]
+
+			function get_max_min_over_time(start, end){
+				
 			}
+			
 
 			function modify_single_dictionary(country_name, current_row){//this works!
 				//inputds a dictionary withe the keys name and axis, outputs the one transformed
 				return per_month => {//each per_month is a dictionary with keys axis and value, with axis being the month in String
 					if(month_transform(per_month.axis)==current_row.Date.getMonth()){
-						return {axis: per_month.axis, value: per_month.value + current_row[country_name_transform(country_name)]};
+						return {axis: per_month.axis, value: per_month.value + current_row[country_name], count: per_month.count+1};
 					}
 					else{
 						return per_month;
 					}
 				}
 			}
-					
-
-
-			//console.log(energy_consumption[0]);
-			//console.log("almost");
-			//console.log(energy_consumption[0]["FR"]);
-			//console.log(data[0].axes.map(modify_single_dictionary("France", energy_consumption[0])));
-
 
 
 
@@ -467,23 +324,31 @@ class PeriodicPlot {
 				  })
 			}
 
+			function average(per_country){
+				 const new_country = {};
+				 new_country["name"] = per_country.name;
+				 new_country["axes"] = per_country.axes.map(per_month => {return {axis: per_month.axis, value: per_month.value/per_month.count}});
+				 return new_country
+
+			}
+
 
 			function get_data(energy_consumption, country_list, start, end, time_scale){
 				let initial_value = country_list.map(country => {
 					const new_country = {};
 					new_country["name"] = country;
-					new_country["axes"] =  [{axis:"January", value:0},
-										{axis:"February",value:0},
-										{axis:"March",value:0},
-										{axis:"April",value:0},
-										{axis:"May",value:0},
-										{axis:"June",value:0},
-										{axis:"Jully",value:0},
-										{axis:"August",value:0},
-										{axis:"September",value:0},
-										{axis:"October",value:0},
-										{axis:"November",value:0},
-										{axis:"December",value:0},	
+					new_country["axes"] =  [{axis:"January", value:0, count:0},
+										{axis:"February",value:0, count:0},
+										{axis:"March",value:0, count:0},
+										{axis:"April",value:0, count:0},
+										{axis:"May",value:0, count:0},
+										{axis:"June",value:0, count:0},
+										{axis:"Jully",value:0, count:0},
+										{axis:"August",value:0, count:0},
+										{axis:"September",value:0, count:0},
+										{axis:"October",value:0, count:0},
+										{axis:"November",value:0, count:0},
+										{axis:"December",value:0, count:0},	
 									];
 					return new_country
 				});
@@ -492,7 +357,10 @@ class PeriodicPlot {
 				return energy_consumption.filter(row => { //filter the time
 					return row.Date.getTime() >= start.getTime() && row.Date.getTime()<end.getTime()})
 				    .reduce(reducer, initial_value) //sums up over all of the months
+				    .map(average)
 			}
+
+
 
 
 			this.get_data = get_data;
@@ -514,26 +382,50 @@ class PeriodicPlot {
 			  margin: margin,
 			  levels: 5,
 			  roundStrokes: true,
-				color: d3.scaleOrdinal().range(["#26AF32", "#762712"]),
+				color: d3.scaleOrdinal(d3.schemeCategory10),
 				format: '.0f'
 			};
+			
 			this.radarChartOptions = radarChartOptions;
 
 
 			// Draw the chart, get a reference the created svg element :
-			data = get_data(energy_consumption, ["France", "Sweden", "Germany"], start, end, "Month")
-			let svg_radar1 = RadarChart(".graph", data, radarChartOptions);
+			//console.log(this.country_list);
+			//data = get_data(energy_consumption, this.country_list, start, end, "Month")
+			//RadarChart(".graph", data, radarChartOptions);
 
 
 	}//constructor
 
 
 		updatePlot(startDate, endDate) {
+			this.start=startDate;
+			this.end=endDate;
 			console.log("Inside Plot with startDate: " + startDate + " and endDate: " + endDate)
 
-			const data = this.get_data(this.energy_consumption, ["France", "Sweden", "Germany"], startDate, endDate, "Month")
+			const data = this.get_data(this.energy_consumption, this.country_list, startDate, endDate, "Month")
 			let svg_radar1 = this.RadarChart(".graph", data, this.radarChartOptions);
-
-
 		  }
+
+		updatePlotAddCountry(country){
+			if (this.default) {//the default country list is currently FR, DE, SE. This deletes that
+				this.country_list = []
+			}
+			this.country_list.push(country);
+			//console.log(this.country_list);
+			const data = this.get_data(this.energy_consumption, this.country_list, this.start, this.end, "Month")
+			this.RadarChart(".graph", data, this.radarChartOptions);
+			this.default=false;
+		}
+
+		updatePlotRemoveCountry(country){
+			this.country_list = this.country_list.filter(c => {
+				return (c.localeCompare(country))});
+			const data = this.get_data(this.energy_consumption, this.country_list, this.start, this.end, "Month")
+			if (data.length ==0) {
+				d3.selectAll(".radarWrapper").remove()
+			}
+			else {this.RadarChart(".graph", data, this.radarChartOptions);
+		}
+		}
 	}
