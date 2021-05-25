@@ -1,6 +1,9 @@
 
 class Main {
 
+    // Population data 
+    // https://appsso.eurostat.ec.europa.eu/nui/submitViewTableAction.do
+
     mapObject;
     plotObject;
 
@@ -28,7 +31,7 @@ class Main {
         this.mapObject.updateMap(startDate, endDate);
         //this.plotObject.updatePlot(startDate, endDate);
     }
-    AddCountry(country) {
+    AddCountry(country, color) {
         //this.plotObject.updatePlot(country);
     }
     RemoveCountry(country){

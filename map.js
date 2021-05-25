@@ -1,13 +1,40 @@
 
 class MapPlot {
 
+    // Default style when unselected and unhovered
+    defaultStyle = {
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '1',
+        fillOpacity: 0.9
+        };
+
+    // style for when mouse hover over country
+    hoverStyle = {
+        weight: 2,
+        color: '#666',
+        dashArray: '',
+        fillOpacity: 0.9
+    }
+
+    // style for selected country
+    selectedStyle = {
+        weight: 2,
+        dashArray: '',
+        fillOpacity: 0.9
+    }
+
     constructor(svg_element_id, energy_consumption, europe_map_data, main) {
         const MapAttributes = this;
         this.energy_consumption = energy_consumption;
         this.europe_map_data = europe_map_data;
 
         this.map = L.map(svg_element_id, {scrollWheelZoom: false,
-          zoomControl: false, dragging:false, doubleClickZoom: false, zoomSnap:0.1}).setView([51, 9]).setZoom(4.3);
+            zoomControl: false, dragging:false, doubleClickZoom: false, zoomSnap:0.1}).setView([51, 9]).setZoom(4.3);
+
+        var selectedCountries = [];
+        var selectedColors = ['red', 'green', 'blue']
 
         // Draw full map
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -40,14 +67,9 @@ class MapPlot {
 
         // Function to associate energy consumption value with fill in
         function style_country(features) {
-            return {
-            fillColor: MapAttributes.getColor(MapAttributes.energy_consumption[0][features.properties.ISO2]),
-            weight: 2,
-            opacity: 1,
-            color: 'white',
-            dashArray: '1',
-            fillOpacity: 0.9
-            };
+            var style = MapAttributes.defaultStyle;
+            style.fillColor = MapAttributes.getColor(MapAttributes.energy_consumption[0][features.properties.ISO2]);
+            return style;
         }
 
         // Function for mouseover interaction
@@ -56,24 +78,16 @@ class MapPlot {
             MapAttributes.info.update(layer.feature);
 
             // Change the style with mouseover only if was not selected before by click action
-            if (storeLayerClicked.length === 0 || !(storeLayerClicked.includes(e.target._leaflet_id))){
-                layer.setStyle({
-                    weight: 2,
-                    color: '#666',
-                    dashArray: '',
-                    fillOpacity: 0.9
-                });}
-
-            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                      layer.bringToFront();
+            if (!(selectedCountries.includes(layer._leaflet_id))){
+                layer.setStyle(MapAttributes.hoverStyle);
             }
         }
 
         // Function to reset style countries when mouse off the country
         function resetHighlight(e) {
-            if (storeLayerClicked.length === 0 || !(storeLayerClicked.includes(e.target._leaflet_id))) {
-            MapAttributes.geojson.resetStyle(e.target);
-        }
+            if (!(selectedCountries.includes(e.target._leaflet_id))) {
+                MapAttributes.geojson.resetStyle(e.target);
+            }
             MapAttributes.info.update();
         }
 
@@ -81,38 +95,43 @@ class MapPlot {
         function sendCountries(e){
             const layer = e.target;
 
-            if (storeLayerClicked.includes(layer._leaflet_id)) {
-                MapAttributes.geojson.resetStyle(layer) // Reset style
-                const index = storeLayerClicked.indexOf(e.target._leaflet_id);
+            if (selectedCountries.includes(layer._leaflet_id)) {
+                selectedColors.push(layer.options.color);
+                MapAttributes.geojson.resetStyle(layer)
+                const index = selectedCountries.indexOf(layer._leaflet_id);
                 if (index > -1) {
-                    storeLayerClicked.splice(index, 1);
-                };
-                main.RemoveCountry(e.target.feature.properties.ISO2)
+                    selectedCountries.splice(index, 1);
+                };   
+                main.RemoveCountry(layer.feature.properties.ISO2)
             }
             else {
-                layer.setStyle({
-                    weight: 2,
-                    color: '#FF0000',
-                    dashArray: '',
-                    fillOpacity: 0.9
-                });
-                storeLayerClicked.push(layer._leaflet_id);
-                main.AddCountry(e.target.feature.properties.ISO2);
-            }
-
-            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
-                      layer.bringToFront();
+                var color = selectedColors.pop();
+                var style = MapAttributes.selectedStyle;
+                style.color = color;
+                layer.setStyle(style);
+                selectedCountries.push(layer._leaflet_id);
+                main.AddCountry(layer.feature.properties.ISO2, color);
             }
         }
 
+        function bringLayerFront(e) {
+            e.target.bringToFront();
+        }
+
         // Main function for highlighting countries and clicking options
-        var storeLayerClicked = [];
         function onEachFeature(feature, layer) {
       		layer.on({
                 click: sendCountries,
       			mouseover: highlightFeature,
       			mouseout: resetHighlight,
       		});
+
+            if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+                layer.on({
+                    click: bringLayerFront,
+                    mouseover: bringLayerFront,
+                  });
+            }
         }
 
         // Draw map of countries with energy
@@ -212,14 +231,7 @@ class MapPlot {
             });
 
             function country_style(feat) {
-                    return {
-                        fillColor: MapAttributes.getColor(data_average[feat.properties.ISO2]),
-                        weight: 2,
-                        opacity: 1,
-                        color: 'white',
-                        dashArray: '1',
-                        fillOpacity: 0.9
-                    }
+                    return { fillColor: MapAttributes.getColor(data_average[feat.properties.ISO2])};
             }
             this.geojson.setStyle(country_style);
         }
