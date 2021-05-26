@@ -48,7 +48,10 @@ class Main {
     }
 
     UpdateData(startDate, endDate) {
-        const data = this.energy_consumption_capita.filter(row => { 
+        this.startDate = startDate;
+        this.endDate = endDate;
+
+        const data = this.currentData.filter(row => { 
             return row.Date.getTime() >= startDate.getTime() && row.Date.getTime() < endDate.getTime()
         });
         this.mapObject.updateMap(data);
@@ -61,7 +64,21 @@ class Main {
         this.plotObject.updatePlotRemoveCountry(country);
     }
 
+    SwitchToCapita() {
+        if (this.currentData == this.energy_consumption_capita) {
+            this.currentData = this.energy_consumption;
+            this.capitaButton.style.backgroundColor = 'transparent'
+        } 
+        else {
+            this.currentData = this.energy_consumption_capita;
+            this.capitaButton.style.backgroundColor = '#28AFB0'
+        }
+        this.UpdateData(this.startDate, this.endDate)
+    }
+
     constructor() {
+        const main = this;
+
         /* ===== CONSTANST ===== */
         const CONSUMPTION_DATA_PATH = 'data/energy_consumption.csv';
         const POPULATION_DATA_PATH = 'data/populations.csv';
@@ -74,6 +91,9 @@ class Main {
         const population_promise = d3.csv(POPULATION_DATA_PATH, this.ParsePopulationData);
         const map_promise = d3.json(MAP_DATA_PATH)
 
+        this.capitaButton = document.getElementById("capita_button")
+        this.capitaButton.onclick = function() { main.SwitchToCapita(); };
+
         Promise.all([energy_consumption_promise, population_promise, map_promise]).then((results) => {
             this.energy_consumption = results[0];
             this.population = results[1];
@@ -82,8 +102,10 @@ class Main {
             });
             let europe_map_data = results[2];
 
-            console.log(this.energy_consumption_capita)
-            console.log(this.population.filter(d => d.Year == this.energy_consumption[0].Date.getFullYear())[0].AT)
+            let dates = this.energy_consumption.map(d => d.Date);
+            this.startDate = d3.min(dates);
+            this.endDate = d3.max(dates);
+            this.currentData = this.energy_consumption;
 
             this.mapObject = new MapPlot(MAP_ID, this.energy_consumption, europe_map_data, this);
             this.plotObject = new PeriodicPlot(GRAPH_ID, this.energy_consumption);
