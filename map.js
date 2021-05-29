@@ -214,13 +214,8 @@ class MapPlot {
                   '#f9e1a2';
                       }
 
-    updateMap(start, end) {
+    updateMap(data) {
             const MapAttributes = this;
-
-        // Get entries from start to end dates
-            const data = MapAttributes.energy_consumption.filter(row => { //filter the time
-                return row.Date.getTime() >= start.getTime() && row.Date.getTime() < end.getTime()
-            });
 
           // Get months for each entry
             const data_month = data.map(x => ({...x, Month: new Date(x.Date).getMonth()}));
@@ -240,11 +235,7 @@ class MapPlot {
             // Get minimum and maximum values for color scale
             const minimum = Math.min(...data_average);
             const maximum = Math.max(...data_average);
-
-            // For now, plots the first entry in [start, end]
-            const data_test = MapAttributes.energy_consumption.filter(row => { //filter the time
-                return row.Date.getTime() >= start.getTime() && row.Date.getTime() <= start.getTime()
-            });
+            
 
             function country_style(feat) {
                     return { fillColor: MapAttributes.getColorScale(data_average[feat.properties.ISO2], minimum, maximum)};
