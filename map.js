@@ -57,8 +57,8 @@ class MapPlot {
         	return this._div;
         };
 
-        const minimum = Math.min(Object.values(energy_consumption[0]));
-        const maximum = Math.max(Object.values(energy_consumption[0]));
+        const minimum = Math.min(...Object.values(energy_consumption[0]));
+        const maximum = Math.max(...Object.values(energy_consumption[0]));
 
         this.info.update = function (feat) {
         	this._div.innerHTML = '<h4>Energy consumption</h4>' +  (feat ?
