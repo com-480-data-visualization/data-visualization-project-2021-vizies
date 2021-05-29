@@ -34,25 +34,7 @@ class MapPlot {
             zoomControl: false, dragging:false, doubleClickZoom: false, zoomSnap:0.1}).setView([51, 9]).setZoom(4.3);
 
         var selectedCountries = [];
-        //var selectedColors = ['red', 'green', 'blue']
-        //var color_func = d3.scaleOrdinal(d3.schemeCategory10)
-
-		const color_func = {AT: "#1f77b4",
-						BE: "#ff7f0e",
-						CH: "#2ca02c",
-						DE: "#d62728",
-						DK: "#9467bd",
-						ES: "#8c564b",
-						FR: "#e377c2",
-						GB: "#7f7f7f",
-						IE: "#bcbd22",
-						IT: "#17becf",
-						LU: "#1f77b4",
-						NL: "#ff7f0e",
-						NO: "#2ca02c",
-						PT: "#d62728",
-						SE: "#9467bd"};
-
+        var selectedColors = ['red', 'green', 'blue']
 
         // Draw full map
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -75,6 +57,9 @@ class MapPlot {
         	return this._div;
         };
 
+        const minimum = Math.min(...energy_consumption[0]);
+        const maximum = Math.max(...energy_consumption[0]);
+
         this.info.update = function (feat) {
         	this._div.innerHTML = '<h4>Energy consumption</h4>' +  (feat ?
         		'<b>' + feat.properties.NAME + '</b><br />' + energy_consumption[0][feat.properties.ISO2] + ' MWh '
@@ -83,10 +68,12 @@ class MapPlot {
 
         this.info.addTo(this.map);
 
+
         // Function to associate energy consumption value with fill in
         function style_country(features) {
             var style = MapAttributes.defaultStyle;
-            style.fillColor = MapAttributes.getColor(MapAttributes.energy_consumption[0][features.properties.ISO2]);
+            style.fillColor = MapAttributes.getColorScale(MapAttributes.energy_consumption[0][features.properties.ISO2],
+                minimum, maximum);
             return style;
         }
 
@@ -114,7 +101,7 @@ class MapPlot {
             const layer = e.target;
 
             if (selectedCountries.includes(layer._leaflet_id)) {
-                //selectedColors.push(layer.options.color);
+                selectedColors.push(layer.options.color);
                 MapAttributes.geojson.resetStyle(layer)
                 const index = selectedCountries.indexOf(layer._leaflet_id);
                 if (index > -1) {
@@ -123,7 +110,7 @@ class MapPlot {
                 main.RemoveCountry(layer.feature.properties.ISO2)
             }
             else {
-                const color = color_func[layer.feature.properties.ISO2];
+                var color = selectedColors.pop();
                 var style = MapAttributes.selectedStyle;
                 style.color = color;
                 layer.setStyle(style);
@@ -186,6 +173,13 @@ class MapPlot {
         //console.log(energy_consumption[0])
     }
 
+    getColorScale(d, min, max) {
+        // Minimum value, (min+max)/2, maximum value
+        let linearScale = d3.scaleLinear()
+                        .domain([min, (min+max)/2, max])
+                        .range(['#4c080f', '#f09c31', '#ffed7e']);
+        return linearScale(d)
+    }
     getColor(d) {
           return d > 30000 ? '#340000' :
               d > 25000 ? '#400408' :
@@ -220,20 +214,20 @@ class MapPlot {
                   '#f9e1a2';
                       }
 
-    updateMap(newData) {
+    updateMap(start, end) {
             const MapAttributes = this;
 
         // Get entries from start to end dates
-            /*const data = MapAttributes.energy_consumption.filter(row => { //filter the time
+            const data = MapAttributes.energy_consumption.filter(row => { //filter the time
                 return row.Date.getTime() >= start.getTime() && row.Date.getTime() < end.getTime()
-            });*/
+            });
 
           // Get months for each entry
-            const data_month = newData.map(x => ({...x, Month: new Date(x.Date).getMonth()}));
+            const data_month = data.map(x => ({...x, Month: new Date(x.Date).getMonth()}));
 
             const count = data_month.length
 
-            const data_sum = newData.reduce((acc, cur) => {
+            const data_sum = data.reduce((acc, cur) => {
                 for(var key of Object.keys(cur)){
                     acc[key] = acc[key] + cur[key] || cur[key];
                 }
@@ -243,13 +237,17 @@ class MapPlot {
             const data_average = Object.keys(data_sum).reduce((acc, key) => {acc[key] = data_sum[key]/count; return acc; }, {})
             //console.log(data_average)
 
+            // Get minimum and maximum values for color scale
+            const minimum = Math.min(...data_average);
+            const maximum = Math.max(...data_average);
+
             // For now, plots the first entry in [start, end]
-            /*const data_test = MapAttributes.energy_consumption.filter(row => { //filter the time
+            const data_test = MapAttributes.energy_consumption.filter(row => { //filter the time
                 return row.Date.getTime() >= start.getTime() && row.Date.getTime() <= start.getTime()
-            });*/
+            });
 
             function country_style(feat) {
-                    return { fillColor: MapAttributes.getColor(data_average[feat.properties.ISO2])};
+                    return { fillColor: MapAttributes.getColorScale(data_average[feat.properties.ISO2], minimum, maximum)};
             }
             this.geojson.setStyle(country_style);
         }
