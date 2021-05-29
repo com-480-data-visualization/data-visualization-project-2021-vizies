@@ -16,15 +16,12 @@ class PeriodicPlot {
 		const cos = Math.cos;
 		const HALF_PI = Math.PI / 2;
 
-		this.energy_consumption = energy_consumption;
+		this.data = energy_consumption;
 		this.country_list =["FR", "DE", "SE"];
 		this.default = true;
 		this.start=start;
 		this.end = end;
 
-
-		//this.start =energy_consumption[0].Date;
-		//this.end =energy_consumption[100].Date
 
 		const RadarChart = function RadarChart(parent_selector, data, options) {
 
@@ -55,6 +52,22 @@ class PeriodicPlot {
 			  });
 			}//wrap
 
+			const color_func = {AT: "#1f77b4",
+						BE: "#ff7f0e",
+						CH: "#2ca02c",
+						DE: "#d62728",
+						DK: "#9467bd",
+						ES: "#8c564b",
+						FR: "#e377c2",
+						GB: "#7f7f7f",
+						IE: "#bcbd22",
+						IT: "#17becf",
+						LU: "#1f77b4",
+						NL: "#ff7f0e",
+						NO: "#2ca02c",
+						PT: "#d62728",
+						SE: "#9467bd"};
+
 			const cfg = {
 			 w: 600,				//Width of the circle
 			 h: 600,				//Height of the circle
@@ -68,31 +81,31 @@ class PeriodicPlot {
 			 opacityCircles: 0.1, 	//The opacity of the circles of each blob
 			 strokeWidth: 2, 		//The width of the stroke around each blob
 			 roundStrokes: false,	//If true the area and stroke will follow a round path (cardinal-closed)
-			 color: d3.scaleOrdinal(d3.schemeCategory10),	//Color function,
+			 color: color_func,	//Color function,
 			 format: '.2%',
-			 unit: '',
-			 legend: false
+			 unit: 'MW', // And MW per capita!!
+			 legend: false // COuld display country names using this
 			};
 
-			if (this.default){
-				console.log({
-			    AT: cfg.color("AT"),
-                BE: cfg.color("BE"),
-                CH: cfg.color("CH"),
-                DE: cfg.color("DE"),
-                DK: cfg.color("DK"),
-                ES: cfg.color("ES"),
-                FR: cfg.color("FR"),
-                GB: cfg.color("GB"),
-                IE: cfg.color("IE"),
-                IT: cfg.color("IT"),
-                LU: cfg.color("LU"),
-                NL: cfg.color("NL"),
-                NO: cfg.color("NO"),
-                PT: cfg.color("PT"),
-                SE: cfg.color("SE")})
+			// if (this.default){ //print the colours associated to each country
+			// 	console.log({
+			//     AT: cfg.color("AT"),
+   //              BE: cfg.color("BE"),
+   //              CH: cfg.color("CH"),
+   //              DE: cfg.color("DE"),
+   //              DK: cfg.color("DK"),
+   //              ES: cfg.color("ES"),
+   //              FR: cfg.color("FR"),
+   //              GB: cfg.color("GB"),
+   //              IE: cfg.color("IE"),
+   //              IT: cfg.color("IT"),
+   //              LU: cfg.color("LU"),
+   //              NL: cfg.color("NL"),
+   //              NO: cfg.color("NO"),
+   //              PT: cfg.color("PT"),
+   //              SE: cfg.color("SE")})
 
-			}
+			// }
 
 
 			//Put all of the options into a variable called cfg
@@ -243,7 +256,7 @@ class PeriodicPlot {
 				.attr("class", "radarStroke")
 				.attr("d", function(d,i) { return radarLine(d.axes); })
 				.style("stroke-width", cfg.strokeWidth + "px")
-				.style("stroke", (d,i) => cfg.color(d.name))
+				.style("stroke", (d,i) => color_func[d.name])
 				.style("fill", "none")
 				.style("filter" , "url(#glow)");
 
@@ -256,7 +269,7 @@ class PeriodicPlot {
 				.attr("r", cfg.dotRadius)
 				.attr("cx", (d,i) => rScale(d.value) * cos(angleSlice * i - HALF_PI))
 				.attr("cy", (d,i) => rScale(d.value) * sin(angleSlice * i - HALF_PI))
-				.style("fill", (d) => cfg.color(d.id))
+				.style("fill", (d) => color_func[d.id])
 				.style("fill-opacity", 0.8);
 
 			return svg;
@@ -275,7 +288,7 @@ class PeriodicPlot {
 			////////////////////////// Data and Data Fetching //////////////////////////////
 			//////////////////////////////////////////////////////////////
 
-			function month_transform(month_name){
+			function month_transform(month_name){ //should do if sequence?
 				const month_dic = {"January" :0,
 							"February" : 1,
 							"March":2,
@@ -293,9 +306,9 @@ class PeriodicPlot {
 			}
 
 
-			function get_max_min_over_time(start, end){
+			// function get_max_min_over_time(start, end){
 				
-			}
+			// }
 			
 
 			function modify_single_dictionary(country_name, current_row){//this works!
@@ -324,16 +337,17 @@ class PeriodicPlot {
 				  })
 			}
 
-			function average(per_country){
+			function average(per_country){//this gives the average per hour of each month
 				 const new_country = {};
 				 new_country["name"] = per_country.name;
-				 new_country["axes"] = per_country.axes.map(per_month => {return {axis: per_month.axis, value: per_month.value/per_month.count}});
+				 new_country["axes"] = per_country.axes.map(per_month => {
+				 	return {axis: per_month.axis, value: per_month.value/per_month.count}});
 				 return new_country
 
 			}
 
 
-			function get_data(energy_consumption, country_list, time_scale){
+			function get_data(energy_consumption_data, country_list, time_scale){
 				let initial_value = country_list.map(country => {
 					const new_country = {};
 					new_country["name"] = country;
@@ -354,20 +368,9 @@ class PeriodicPlot {
 				});
 
 
-				return energy_consumption.reduce(reducer, initial_value) //sums up over all of the months
+				return energy_consumption_data.reduce(reducer, initial_value) //sums up over all of the months
 				    					 .map(average)
 			}
-
-
-
-
-			this.get_data = get_data;
-			this.RadarChart =RadarChart;
-
-
-
-
-
 
 
 			//////////////////////////////////////////////////////////////
@@ -375,8 +378,8 @@ class PeriodicPlot {
       ///// (not so much options) //////////////////////////////////
 			//////////////////////////////////////////////////////////////
 			var radarChartOptions = {
-			  w: 290,
-			  h: 350,
+			  w: 350,
+			  h: 370,
 			  margin: margin,
 			  levels: 5,
 			  roundStrokes: true,
@@ -385,21 +388,17 @@ class PeriodicPlot {
 			};
 			
 			this.radarChartOptions = radarChartOptions;
+			this.get_data = get_data;
+			this.RadarChart = RadarChart;
 
-
-			// Draw the chart, get a reference the created svg element :
-			//console.log(this.country_list);
-			//data = get_data(energy_consumption, this.country_list, start, end, "Month")
-			//RadarChart(".graph", data, radarChartOptions);
 
 
 	}//constructor
 
 
 		updatePlot(newData) {
-			this.energy_consumption = newData
-
-			const data = this.get_data(this.energy_consumption, this.country_list, "Month")
+			this.data = newData
+			const data = this.get_data(this.data, this.country_list, "Month")
 			let svg_radar1 = this.RadarChart(".graph", data, this.radarChartOptions);
 		  }
 
@@ -408,8 +407,7 @@ class PeriodicPlot {
 				this.country_list = []
 			}
 			this.country_list.push(country);
-			//console.log(this.country_list);
-			const data = this.get_data(this.energy_consumption, this.country_list, "Month")
+			const data = this.get_data(this.data, this.country_list, "Month")
 			this.RadarChart(".graph", data, this.radarChartOptions);
 			this.default=false;
 		}
@@ -417,11 +415,12 @@ class PeriodicPlot {
 		updatePlotRemoveCountry(country){
 			this.country_list = this.country_list.filter(c => {
 				return (c.localeCompare(country))});
-			const data = this.get_data(this.energy_consumption, this.country_list, "Month")
-			if (data.length ==0) {
+			if (this.country_list.length == 0){
 				d3.selectAll(".radarWrapper").remove()
 			}
-			else {this.RadarChart(".graph", data, this.radarChartOptions);
-		}
+			else {
+				const data = this.get_data(this.data, this.country_list, "Month")
+				this.RadarChart(".graph", data, this.radarChartOptions);
+			}
 		}
 	}

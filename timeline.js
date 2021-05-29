@@ -80,7 +80,7 @@ class Timeline {
 
         function sendDates(d1) {
             const startDatePadding = -3;
-            const endDatePadding = 9;
+            const endDatePadding = -3;
             const startDate = new Date(d1[0].setMonth(d1[0].getMonth() + startDatePadding));
             const endDate = new Date(d1[1].setMonth(d1[1].getMonth() + endDatePadding)-1);
             

@@ -34,7 +34,25 @@ class MapPlot {
             zoomControl: false, dragging:false, doubleClickZoom: false, zoomSnap:0.1}).setView([51, 9]).setZoom(4.3);
 
         var selectedCountries = [];
-        var selectedColors = ['red', 'green', 'blue']
+        //var selectedColors = ['red', 'green', 'blue']
+        //var color_func = d3.scaleOrdinal(d3.schemeCategory10)
+
+		const color_func = {AT: "#1f77b4",
+						BE: "#ff7f0e",
+						CH: "#2ca02c",
+						DE: "#d62728",
+						DK: "#9467bd",
+						ES: "#8c564b",
+						FR: "#e377c2",
+						GB: "#7f7f7f",
+						IE: "#bcbd22",
+						IT: "#17becf",
+						LU: "#1f77b4",
+						NL: "#ff7f0e",
+						NO: "#2ca02c",
+						PT: "#d62728",
+						SE: "#9467bd"};
+
 
         // Draw full map
         L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
@@ -96,7 +114,7 @@ class MapPlot {
             const layer = e.target;
 
             if (selectedCountries.includes(layer._leaflet_id)) {
-                selectedColors.push(layer.options.color);
+                //selectedColors.push(layer.options.color);
                 MapAttributes.geojson.resetStyle(layer)
                 const index = selectedCountries.indexOf(layer._leaflet_id);
                 if (index > -1) {
@@ -105,7 +123,7 @@ class MapPlot {
                 main.RemoveCountry(layer.feature.properties.ISO2)
             }
             else {
-                var color = selectedColors.pop();
+                const color = color_func[layer.feature.properties.ISO2];
                 var style = MapAttributes.selectedStyle;
                 style.color = color;
                 layer.setStyle(style);
