@@ -341,6 +341,7 @@ class PeriodicPlot {
 				 const new_country = {};
 				 new_country["name"] = per_country.name;
 				 new_country["axes"] = per_country.axes.map(per_month => {
+				 	if (per_month.count == 0) {return {axis: per_month.axis, value: 0}}
 				 	return {axis: per_month.axis, value: per_month.value/per_month.count}});
 				 return new_country
 
@@ -352,17 +353,17 @@ class PeriodicPlot {
 					const new_country = {};
 					new_country["name"] = country;
 					new_country["axes"] =  [{axis:"January", value:0, count:0},
-										{axis:"February",value:0, count:0},
-										{axis:"March",value:0, count:0},
-										{axis:"April",value:0, count:0},
-										{axis:"May",value:0, count:0},
-										{axis:"June",value:0, count:0},
-										{axis:"Jully",value:0, count:0},
-										{axis:"August",value:0, count:0},
-										{axis:"September",value:0, count:0},
-										{axis:"October",value:0, count:0},
-										{axis:"November",value:0, count:0},
-										{axis:"December",value:0, count:0},	
+										{axis:"February", value:0, count:0},
+										{axis:"March", value:0, count:0},
+										{axis:"April", value:0, count:0},
+										{axis:"May", value:0, count:0},
+										{axis:"June", value:0, count:0},
+										{axis:"Jully", value:0, count:0},
+										{axis:"August", value:0, count:0},
+										{axis:"September", value:0, count:0},
+										{axis:"October", value:0, count:0},
+										{axis:"November", value:0, count:0},
+										{axis:"December", value:0, count:0},	
 									];
 					return new_country
 				});
