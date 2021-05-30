@@ -201,39 +201,6 @@ class MapPlot {
                         .range(['#ffed7e', '#f09c31', '#4c080f']);
         return linearScale(d)
     }
-    getColor(d) {
-          return d > 30000 ? '#340000' :
-              d > 25000 ? '#400408' :
-              d > 20000 ? '#4c080f' :
-              d > 15000 ? '#590f13' :
-              d > 10000 ? '#661516' :
-              d > 9500  ? '#731c18' :
-              d > 9000  ? '#80231a' :
-              d > 8500  ? '#8d2b1c' :
-              d > 8000  ? '#9a331d' :
-              d > 7500  ? '#a73b1e' :
-              d > 7000  ? '#b4441f' :
-              d > 6500  ? '#c04d1e' :
-              d > 6000  ? '#cd561d' :
-              d > 5500  ? '#d9601c' :
-              d > 5000  ? '#e56a19' :
-              d > 4500  ? '#e7751c' :
-              d > 4000  ? '#ea7f20' :
-              d > 3500  ? '#ec8925' :
-              d > 3000  ? '#ee922b' :
-              d > 2500  ? '#f09c31' :
-              d > 2000  ? '#f2a538' :
-              d > 1500  ? '#f4af3f' :
-              d > 1000  ? '#f5b847' :
-              d > 950   ? '#f7c14f' :
-              d > 900   ? '#f9ca58' :
-              d > 850   ? '#fad361' :
-              d > 800   ? '#fcdc6a' :
-              d > 750   ? '#fde474' :
-              d > 700   ? '#fee778' :
-              d > 650   ? '#ffed7e' :
-                  '#f9e1a2';
-                      }
 
     updateMap(data) {
             const MapAttributes = this;
@@ -253,13 +220,23 @@ class MapPlot {
             const data_average = Object.keys(data_sum).reduce((acc, key) => {acc[key] = data_sum[key]/count; return acc; }, {})
 
             // Get minimum and maximum values for color scale
-            const minimum = Math.min(...Object.values(data_average));
-            const maximum = Math.max(...Object.values(data_average));
+            var energy_copy = JSON.parse(JSON.stringify(data_average));
+            for(var z = 0; z <energy_copy.length; z++) {
+                delete energy_copy[z]['Date'];
+            }
+            const minimum = Math.min(...Object.values(energy_copy));
+            const maximum = Math.max(...Object.values(energy_copy));
             
 
             function country_style(feat) {
                     return { fillColor: MapAttributes.getColorScale(data_average[feat.properties.ISO2], minimum, maximum)};
             }
             this.geojson.setStyle(country_style);
+        }
+
+        updateLegend(data) {
+        const MapAttributes = this;
+        const minimum = Math.min(...Object.values(data));
+        const maximum = Math.max(...Object.values(data));
         }
 }
