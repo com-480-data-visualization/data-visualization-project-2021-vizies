@@ -34,7 +34,6 @@ class MapPlot {
             zoomControl: false, dragging:false, doubleClickZoom: false, zoomSnap:0.1}).setView([51, 9]).setZoom(4.3);
 
         var selectedCountries = [];
-        //var selectedColors = ['red', 'green', 'blue']
         const color_func = {AT: "#1f77b4",
                         BE: "#ff7f0e",
                         CH: "#2ca02c",
@@ -61,7 +60,6 @@ class MapPlot {
             zoomOffset: -1
         }).addTo(this.map);
 
-        // Unnecessary ?
         this.countries = ["AT", "BE", "CH", "DE", "DK", "ES", "FR", "GB", "IE", "LT", "LU", "NL", "NO", "PT", "SE"];
 
         this.info = L.control();
@@ -72,8 +70,15 @@ class MapPlot {
         	return this._div;
         };
 
-        const minimum = Math.min(...Object.values(energy_consumption[0]));
-        const maximum = Math.max(...Object.values(energy_consumption[0]));
+
+        const energy_copy = JSON.parse(JSON.stringify(energy_consumption));
+        delete energy_copy[0]['Date'];
+
+        const minimum = Math.min(...Object.values(energy_copy[0]));
+        const maximum = Math.max(...Object.values(energy_copy[0]));
+
+        console.log(minimum)
+        console.log(maximum)
 
         this.info.update = function (feat) {
         	this._div.innerHTML = '<h4>Energy consumption</h4>' +  (feat ?
@@ -192,7 +197,7 @@ class MapPlot {
         // Minimum value, (min+max)/2, maximum value
         let linearScale = d3.scaleLinear()
                         .domain([min, (min+max)/2, max])
-                        .range(['#4c080f', '#f09c31', '#ffed7e']);
+                        .range(['#ffed7e', '#f09c31', '#4c080f']);
         return linearScale(d)
     }
     getColor(d) {
@@ -245,11 +250,10 @@ class MapPlot {
             }, {})
 
             const data_average = Object.keys(data_sum).reduce((acc, key) => {acc[key] = data_sum[key]/count; return acc; }, {})
-            //console.log(data_average)
 
             // Get minimum and maximum values for color scale
-            const minimum = Math.min(data_average); //this was a bug for me (Jacob)
-            const maximum = Math.max(data_average);
+            const minimum = Math.min(...Object.values(data_average));
+            const maximum = Math.max(...Object.values(data_average));
             
 
             function country_style(feat) {
