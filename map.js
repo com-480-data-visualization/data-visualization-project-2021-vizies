@@ -7,10 +7,10 @@ class MapPlot {
         opacity: 1,
         color: 'white',
         dashArray: '1',
-        fillOpacity: 0.9
+        fillOpacity: 0.9,
         };
 
-    // style for when mouse hover over country
+    // border style for when mouse hover over country
     hoverStyle = {
         weight: 2,
         color: '#666',
@@ -71,25 +71,25 @@ class MapPlot {
         };
 
 
+        // Copy energy_consumption to remove dates and get true maximum value
         const energy_copy = JSON.parse(JSON.stringify(energy_consumption));
         delete energy_copy[0]['Date'];
 
         const minimum = Math.min(...Object.values(energy_copy[0]));
         const maximum = Math.max(...Object.values(energy_copy[0]));
-
-        console.log(minimum)
-        console.log(maximum)
+        console.log(minimum);
+        console.log(maximum);
 
         this.info.update = function (feat) {
         	this._div.innerHTML = '<h4>Energy consumption</h4>' +  (feat ?
-        		'<b>' + feat.properties.NAME + '</b><br />' + energy_consumption[0][feat.properties.ISO2] + ' MWh '
+        		'<b>' + feat.properties.NAME + '</b><br />' + MapAttributes.energy_consumption[0][feat.properties.ISO2] + ' MWh '
         		: 'Hover over a state');
         };
 
         this.info.addTo(this.map);
 
 
-        // Function to associate energy consumption value with fill in
+        // Function to associate energy consumption value with fill in color
         function style_country(features) {
             var style = MapAttributes.defaultStyle;
             style.fillColor = MapAttributes.getColorScale(MapAttributes.energy_consumption[0][features.properties.ISO2],
@@ -121,7 +121,6 @@ class MapPlot {
             const layer = e.target;
 
             if (selectedCountries.includes(layer._leaflet_id)) {
-                //selectedColors.push(layer.options.color);
                 MapAttributes.geojson.resetStyle(layer)
                 const index = selectedCountries.indexOf(layer._leaflet_id);
                 if (index > -1) {
@@ -168,10 +167,15 @@ class MapPlot {
         var legend = L.control({position: 'bottomright'});
 
         legend.onAdd = function (map) {
-
+            const N = 15;
+            grades = [];
+            for (var j = 0; j < N; j++) {
+                grades.push(Math.round(minimum*((maximum/minimum)**(j/N))));
+            }
+            grades.push(maximum);
+        console.log(grades)
         var div = L.DomUtil.create('div', 'info legend'),
-          grades = [0, 800, 900, 1000, 2000, 3000, 4000, 5000,
-              6000, 7000, 8000, 9000, 10000, 20000, 30000],
+          grades,
           labels = [],
           from, to;
 
@@ -189,8 +193,6 @@ class MapPlot {
         };
 
         legend.addTo(this.map);
-        // Test some shit -> check console
-        //console.log(energy_consumption[0])
     }
 
     getColorScale(d, min, max) {
