@@ -78,6 +78,13 @@ clear: both;
 display: table;
 }
 
+.content-button-column{
+	float: left;
+	width: 5%;
+	height: 100%;
+
+}
+
 .button {
 	float: left;
 	margin-right: 5px;

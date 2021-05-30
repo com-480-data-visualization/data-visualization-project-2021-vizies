@@ -21,6 +21,7 @@ class PeriodicPlot {
 		this.default = true;
 		this.start=start;
 		this.end = end;
+		this.time_scale = "Month";
 
 
 		const RadarChart = function RadarChart(parent_selector, data, options) {
@@ -90,22 +91,22 @@ class PeriodicPlot {
 			// if (this.default){ //print the colours associated to each country
 			// 	console.log({
 			//     AT: cfg.color("AT"),
-   //              BE: cfg.color("BE"),
-   //              CH: cfg.color("CH"),
-   //              DE: cfg.color("DE"),
-   //              DK: cfg.color("DK"),
-   //              ES: cfg.color("ES"),
-   //              FR: cfg.color("FR"),
-   //              GB: cfg.color("GB"),
-   //              IE: cfg.color("IE"),
-   //              IT: cfg.color("IT"),
-   //              LU: cfg.color("LU"),
-   //              NL: cfg.color("NL"),
-   //              NO: cfg.color("NO"),
-   //              PT: cfg.color("PT"),
-   //              SE: cfg.color("SE")})
+		   //              BE: cfg.color("BE"),
+		   //              CH: cfg.color("CH"),
+		   //              DE: cfg.color("DE"),
+		   //              DK: cfg.color("DK"),
+		   //              ES: cfg.color("ES"),
+		   //              FR: cfg.color("FR"),
+		   //              GB: cfg.color("GB"),
+		   //              IE: cfg.color("IE"),
+		   //              IT: cfg.color("IT"),
+		   //              LU: cfg.color("LU"),
+		   //              NL: cfg.color("NL"),
+		   //              NO: cfg.color("NO"),
+		   //              PT: cfg.color("PT"),
+		   //              SE: cfg.color("SE")})
 
-			// }
+			 //}
 
 
 			//Put all of the options into a variable called cfg
@@ -238,7 +239,12 @@ class PeriodicPlot {
 			const radarLine = d3.radialLine()
 				.curve(d3.curveLinearClosed)
 				.radius(d => rScale(d.value))
-				.angle((d,i) => i * angleSlice);
+				.angle((d,i) => {
+					// if (d.value == 0 ){
+					// 	console.log("heyaaa");
+					// 	console.log(d, i)
+					// 	return 0};
+					return i * angleSlice});
 
 			if(cfg.roundStrokes) {
 				radarLine.curve(d3.curveCardinalClosed)
@@ -303,39 +309,79 @@ class PeriodicPlot {
 							"December":11,
 							}
 				return month_dic[month_name]
-			}
+			}//month_transform
 
+			function day_transform(month_name){ //should do if sequence?
+				const day_dic = {"Monday" :0,
+							"Tuesday" : 1,
+							"Wednesday":2,
+							"Thursday":3,
+							"Friday":4,
+							"Saturday":5,
+							"Sunday":6,
+							}
+				return day_dic[month_name]
+			}//day_transform
 
-			// function get_max_min_over_time(start, end){
-				
-			// }
 			
 
-			function modify_single_dictionary(country_name, current_row){//this works!
+			function modify_single_dictionary(country_name, current_row, time_scale){
 				//inputds a dictionary withe the keys name and axis, outputs the one transformed
-				return per_month => {//each per_month is a dictionary with keys axis and value, with axis being the month in String
-					if(month_transform(per_month.axis)==current_row.Date.getMonth()){
-						return {axis: per_month.axis, value: per_month.value + current_row[country_name], count: per_month.count+1};
-					}
-					else{
-						return per_month;
-					}
+				if(time_scale === "Month"){
+						return per_month => {
+							if(month_transform(per_month.axis)==current_row.Date.getMonth()){
+								return {axis: per_month.axis, value: per_month.value + current_row[country_name], count: per_month.count+1};
+							}//if
+							else{
+								return per_month;
+							}//else
+						}
+					}//if
+				if (time_scale === "Day"){
+						return per_month => {
+							if(day_transform(per_month.axis)==current_row.Date.getDay()){
+								return {axis: per_month.axis, value: per_month.value + current_row[country_name], count: per_month.count+1};
+							}//if
+							else{
+								return per_month;
+							}//else
+						}//fct
 				}
+				if (time_scale === "Hours"){
+						return per_month => {
+							if(parseInt(per_month.axis)==current_row.Date.getHours()){
+								return {axis: per_month.axis, value: per_month.value + current_row[country_name], count: per_month.count+1};
+							}//if
+							else{
+								return per_month;
+							}//else
+						}//fct
+					}//if
+			}//modify_single_dictionary
+
+
+			function reducer_maker(time_scale){
+				return (accumulator, current_row) => {
+					return accumulator.map(country_dic => {
+						return {name: country_dic.name, 
+								axes: country_dic.axes.map(modify_single_dictionary(country_dic.name, current_row, time_scale))}
+					})
+				}
+
 			}
+			
+			// function reducer(accumulator, current_row){
+			// 	//row is a row of energy_consumption, accumulator has the format desired for the radiar viz.
+			// 	//this calls modify_single_dictionary
+			// 	//accumulator is a list of dictionaries
+			// 	return accumulator.map(country_dic => { 
+			// 		const new_dic = {};
+			// 		new_dic["name"] = country_dic.name;
+			// 		new_dic["axes"] = country_dic.axes.map(modify_single_dictionary(country_dic.name, current_row));
+			// 		return new_dic
+			// 	  })
+			// }//reducer
 
-
-
-			function reducer(accumulator, current_row){
-				//row is a row of energy_consumption, accumulator has the format desired for the radiar viz.
-				//this calls modify_single_dictionary
-				//accumulator is a list of dictionaries
-				return accumulator.map(country_dic => { 
-					const new_dic = {};
-					new_dic["name"] = country_dic.name;
-					new_dic["axes"] = country_dic.axes.map(modify_single_dictionary(country_dic.name, current_row));
-					return new_dic
-				  })
-			}
 
 			function average(per_country){//this gives the average per hour of each month
 				 const new_country = {};
@@ -344,34 +390,82 @@ class PeriodicPlot {
 				 	if (per_month.count == 0) {return {axis: per_month.axis, value: 0}}
 				 	return {axis: per_month.axis, value: per_month.value/per_month.count}});
 				 return new_country
+			}//average
 
-			}
 
 
 			function get_data(energy_consumption_data, country_list, time_scale){
-				let initial_value = country_list.map(country => {
-					const new_country = {};
-					new_country["name"] = country;
-					new_country["axes"] =  [{axis:"January", value:0, count:0},
-										{axis:"February", value:0, count:0},
-										{axis:"March", value:0, count:0},
-										{axis:"April", value:0, count:0},
-										{axis:"May", value:0, count:0},
-										{axis:"June", value:0, count:0},
-										{axis:"Jully", value:0, count:0},
-										{axis:"August", value:0, count:0},
-										{axis:"September", value:0, count:0},
-										{axis:"October", value:0, count:0},
-										{axis:"November", value:0, count:0},
-										{axis:"December", value:0, count:0},	
-									];
-					return new_country
-				});
+				// console.log(this.time_scale==="Month");
+				let initial_value = {}
+				if(this.time_scale === "Month"){
+					initial_value = country_list.map(country => {
+						return {name: country,
+								axes: [{axis:"January", value:0, count:0},
+											{axis:"February", value:0, count:0},
+											{axis:"March", value:0, count:0},
+											{axis:"April", value:0, count:0},
+											{axis:"May", value:0, count:0},
+											{axis:"June", value:0, count:0},
+											{axis:"Jully", value:0, count:0},
+											{axis:"August", value:0, count:0},
+											{axis:"September", value:0, count:0},
+											{axis:"October", value:0, count:0},
+											{axis:"November", value:0, count:0},
+											{axis:"December", value:0, count:0}]
+								}//return
+							})//map
+					 }//if
+
+				if (this.time_scale === "Day"){
+					initial_value = country_list.map(country => {
+						return {name:country,
+								axes: [{axis:"Monday", value:0, count:0},
+											{axis:"Tuesday", value:0, count:0},
+											{axis:"Wednesday", value:0, count:0},
+											{axis:"Thursday", value:0, count:0},
+											{axis:"Friday", value:0, count:0},
+											{axis:"Saturday", value:0, count:0},
+											{axis:"Sunday", value:0, count:0}]
+										}
+					})//map
+				}//if
+
+				if (this.time_scale === "Hours"){
+					initial_value = country_list.map(country => {
+						return {name:country,
+								axes: [{axis:"0", value:0, count:0},
+											{axis:"1", value:0, count:0},
+											{axis:"2", value:0, count:0},
+											{axis:"3", value:0, count:0},
+											{axis:"4", value:0, count:0},
+											{axis:"5", value:0, count:0},
+											{axis:"6", value:0, count:0},
+											{axis:"7", value:0, count:0},
+											{axis:"8", value:0, count:0},
+											{axis:"9", value:0, count:0},
+											{axis:"10", value:0, count:0},
+											{axis:"11", value:0, count:0},
+											{axis:"12", value:0, count:0},
+											{axis:"13", value:0, count:0},
+											{axis:"14", value:0, count:0},
+											{axis:"15", value:0, count:0},
+											{axis:"16", value:0, count:0},
+											{axis:"17", value:0, count:0},
+											{axis:"18", value:0, count:0},
+											{axis:"19", value:0, count:0},
+											{axis:"20", value:0, count:0},
+											{axis:"21", value:0, count:0},
+											{axis:"22", value:0, count:0},
+											{axis:"23", value:0, count:0}]
+										}
+									})//map
+				}//if
+
+				return energy_consumption_data.reduce(reducer_maker(time_scale), initial_value) //sums up over all of the months
+				    					 .map(average) //averages per hour
+			}//getdata
 
 
-				return energy_consumption_data.reduce(reducer, initial_value) //sums up over all of the months
-				    					 .map(average)
-			}
 
 
 			//////////////////////////////////////////////////////////////
@@ -392,14 +486,12 @@ class PeriodicPlot {
 			this.get_data = get_data;
 			this.RadarChart = RadarChart;
 
-
-
 	}//constructor
 
 
 		updatePlot(newData) {
-			this.data = newData
-			const data = this.get_data(this.data, this.country_list, "Month")
+			this.data = newData;
+			const data = this.get_data(this.data, this.country_list, this.time_scale);
 			let svg_radar1 = this.RadarChart(".graph", data, this.radarChartOptions);
 		  }
 
@@ -408,7 +500,7 @@ class PeriodicPlot {
 				this.country_list = []
 			}
 			this.country_list.push(country);
-			const data = this.get_data(this.data, this.country_list, "Month")
+			const data = this.get_data(this.data, this.country_list, this.time_scale)
 			this.RadarChart(".graph", data, this.radarChartOptions);
 			this.default=false;
 		}
@@ -420,8 +512,14 @@ class PeriodicPlot {
 				d3.selectAll(".radarWrapper").remove()
 			}
 			else {
-				const data = this.get_data(this.data, this.country_list, "Month")
+				const data = this.get_data(this.data, this.country_list, this.time_scale)
 				this.RadarChart(".graph", data, this.radarChartOptions);
 			}
+		}
+
+		updatePlotTimeScale(time_scale){
+			this.time_scale = time_scale;
+			const data = this.get_data(this.data, this.country_list, this.time_scale)
+			this.RadarChart(".graph", data, this.radarChartOptions);
 		}
 	}
