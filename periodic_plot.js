@@ -53,21 +53,21 @@ class PeriodicPlot {
 			  });
 			}//wrap
 
-			const color_func = {AT: "#1f77b4",
-						BE: "#ff7f0e",
-						CH: "#2ca02c",
-						DE: "#d62728",
-						DK: "#9467bd",
-						ES: "#8c564b",
-						FR: "#e377c2",
-						GB: "#7f7f7f",
-						IE: "#bcbd22",
-						IT: "#17becf",
-						LU: "#1f77b4",
-						NL: "#ff7f0e",
-						NO: "#2ca02c",
-						PT: "#d62728",
-						SE: "#9467bd"};
+			const color_func = {AT: "#FF0000",
+                        BE: "#FF8000",
+                        CH: "#FFFF00",
+                        DE: "#33ff00",
+                        DK: "#2243B6",
+                        ES: "#5DADEC",
+                        FR: "#9C51B6",
+                        GB: "#A83731",
+                        IE: "#AF6E4D",
+                        IT: "#E936A7",
+                        LU: "#00ffe1",
+                        NL: "#ff0099",
+                        NO: "#1d8000",
+                        PT: "#694600",
+                        SE: "#652c77"};
 
 			const cfg = {
 			 w: 600,				//Width of the circle
