@@ -72,7 +72,7 @@ class MapPlot {
 
 
         // Copy energy_consumption to remove dates and get true maximum value
-        const energy_copy = JSON.parse(JSON.stringify(energy_consumption));
+        var energy_copy = JSON.parse(JSON.stringify(energy_consumption));
         delete energy_copy[0]['Date'];
 
         // Get the minimum and maximum values
@@ -166,12 +166,13 @@ class MapPlot {
         var legend = L.control({position: 'bottomright'});
 
         legend.onAdd = function (map) {
-            const N = 15;
+            const N = 10; // Number of squares
             grades = [];
-            for (var j = 0; j < N; j++) {
-                grades.push(Math.round(minimum*((maximum/minimum)**(j/N))/100)*100);
-            }
-            grades.push(Math.round(maximum/100)*100);
+            for (var j = 0; j <= N; j++) {
+                // Logarithmic scale: grades.push(Math.round(minimum*((maximum/minimum)**(j/N))/100)*100);
+                grades.push(Math.round((minimum+j*(maximum-minimum)/N)/100)*100)
+            };
+
         var div = L.DomUtil.create('div', 'info legend'),
           grades,
           labels = [],
@@ -182,7 +183,7 @@ class MapPlot {
             from = grades[i];
             to = grades[i + 1];
             labels.push(
-        				'<i style="background:' + MapAttributes.getColor(from + 1) + '"></i> ' +
+        				'<i style="background:' + MapAttributes.getColorScale(from + 1, minimum, maximum) + '"></i> ' +
         				from + (to ? '&ndash;' + to : '+'));
         }
 
