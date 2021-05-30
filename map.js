@@ -87,7 +87,6 @@ class MapPlot {
 
         this.info.addTo(this.map);
 
-
         // Function to associate energy consumption value with fill in color
         function style_country(features) {
             var style = MapAttributes.defaultStyle;
@@ -163,9 +162,9 @@ class MapPlot {
             onEachFeature: onEachFeature
         }).addTo(this.map);
 
-        var legend = L.control({position: 'bottomright'});
+        this.legend = L.control({position: 'bottomright'});
 
-        legend.onAdd = function (map) {
+        this.legend.onAdd = function (map) {
             const N = 10; // Number of squares
             grades = [];
             for (var j = 0; j <= N; j++) {
@@ -191,7 +190,7 @@ class MapPlot {
             return div;
         };
 
-        legend.addTo(this.map);
+        this.legend.addTo(this.map);
     }
 
     getColorScale(d, min, max) {
@@ -232,11 +231,43 @@ class MapPlot {
                     return { fillColor: MapAttributes.getColorScale(data_average[feat.properties.ISO2], minimum, maximum)};
             }
             this.geojson.setStyle(country_style);
+            MapAttributes.updateLegend(energy_copy);
         }
 
         updateLegend(data) {
         const MapAttributes = this;
         const minimum = Math.min(...Object.values(data));
         const maximum = Math.max(...Object.values(data));
+
+        MapAttributes.map.removeControl(MapAttributes.legend);
+
+        MapAttributes.legend = L.control({position: 'bottomright'});
+
+        MapAttributes.legend.onAdd = function (map) {
+            const N = 10; // Number of squares
+            grades = [];
+            for (var j = 0; j <= N; j++) {
+                // Logarithmic scale: grades.push(Math.round(minimum*((maximum/minimum)**(j/N))/100)*100);
+                grades.push(Math.round((minimum+j*(maximum-minimum)/N)/100)*100)
+            }
+            var div = L.DomUtil.create('div', 'info legend'),
+            grades,
+            labels = [],
+            from, to;
+
+            // loop through our density intervals and generate a label with a colored square for each interval
+            for (var i = 0; i < grades.length; i++) {
+                from = grades[i];
+                to = grades[i + 1];
+                labels.push(
+        				'<i style="background:' + MapAttributes.getColorScale(from + 1, minimum, maximum) + '"></i> ' +
+        				from + (to ? '&ndash;' + to : '+'));
+            }
+
+            div.innerHTML = labels.join('</br>');
+            return div;
+        };
+
+        MapAttributes.legend.addTo(this.map);
         }
 }
