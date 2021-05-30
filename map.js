@@ -182,7 +182,7 @@ class MapPlot {
             from = grades[i];
             to = grades[i + 1];
             labels.push(
-        				'<i style="background:' + MapAttributes.getColorScale(from + 1, minimum, maximum) + '"></i> ' +
+        				'<i style="background:' + MapAttributes.getColorScale(from, minimum, maximum) + '"></i> ' +
         				from + (to ? '&ndash;' + to : '+'));
         }
 
@@ -194,7 +194,6 @@ class MapPlot {
     }
 
     getColorScale(d, min, max) {
-        // Minimum value, (min+max)/2, maximum value
         let linearScale = d3.scaleLinear()
                         .domain([min, (min+max)/2, max])
                         .range(['#ffed7e', '#f09c31', '#4c080f']);
@@ -225,7 +224,6 @@ class MapPlot {
             }
             const minimum = Math.min(...Object.values(energy_copy));
             const maximum = Math.max(...Object.values(energy_copy));
-            
 
             function country_style(feat) {
                     return { fillColor: MapAttributes.getColorScale(data_average[feat.properties.ISO2], minimum, maximum)};
@@ -248,8 +246,10 @@ class MapPlot {
             grades = [];
             for (var j = 0; j <= N; j++) {
                 // Logarithmic scale: grades.push(Math.round(minimum*((maximum/minimum)**(j/N))/100)*100);
-                grades.push(Math.round((minimum+j*(maximum-minimum)/N)/100)*100)
+                if (maximum > 10000){grades.push(Math.round((minimum+j*(maximum-minimum)/N)/100)*100)}
+                else {grades.push(Math.round((minimum+j*(maximum-minimum)/N)*10000)/10000)}
             }
+
             var div = L.DomUtil.create('div', 'info legend'),
             grades,
             labels = [],
@@ -260,7 +260,7 @@ class MapPlot {
                 from = grades[i];
                 to = grades[i + 1];
                 labels.push(
-        				'<i style="background:' + MapAttributes.getColorScale(from + 1, minimum, maximum) + '"></i> ' +
+        				'<i style="background:' + MapAttributes.getColorScale(from, minimum, maximum) + '"></i> ' +
         				from + (to ? '&ndash;' + to : '+'));
             }
 
