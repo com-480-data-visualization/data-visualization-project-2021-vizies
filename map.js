@@ -75,10 +75,9 @@ class MapPlot {
         const energy_copy = JSON.parse(JSON.stringify(energy_consumption));
         delete energy_copy[0]['Date'];
 
+        // Get the minimum and maximum values
         const minimum = Math.min(...Object.values(energy_copy[0]));
         const maximum = Math.max(...Object.values(energy_copy[0]));
-        console.log(minimum);
-        console.log(maximum);
 
         this.info.update = function (feat) {
         	this._div.innerHTML = '<h4>Energy consumption</h4>' +  (feat ?
@@ -170,10 +169,9 @@ class MapPlot {
             const N = 15;
             grades = [];
             for (var j = 0; j < N; j++) {
-                grades.push(Math.round(minimum*((maximum/minimum)**(j/N))));
+                grades.push(Math.round(minimum*((maximum/minimum)**(j/N))/100)*100);
             }
-            grades.push(maximum);
-        console.log(grades)
+            grades.push(Math.round(maximum/100)*100);
         var div = L.DomUtil.create('div', 'info legend'),
           grades,
           labels = [],
