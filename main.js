@@ -67,6 +67,26 @@ class Main {
         }
     }
 
+    ParseGreenHouseGazData(d) {
+        return {Year: parseInt(d.year),
+            AT: parseInt(d.at),
+            BE: parseInt(d.be),
+            CH: parseInt(d.ch),
+            DE: parseInt(d.de),
+            DK: parseInt(d.dk),
+            ES: parseInt(d.es),
+            FR: parseInt(d.fr),
+            GB: parseInt(d.gb),
+            IE: parseInt(d.ie),
+            IT: parseInt(d.it),
+            LU: parseInt(d.lu),
+            NL: parseInt(d.nl),
+            NO: parseInt(d.no),
+            PT: parseInt(d.pt),
+            SE: parseInt(d.se)
+        }
+    }
+
     UpdateData(startDate, endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
@@ -94,16 +114,26 @@ class Main {
             this.GDPButton.style.backgroundColor = 'transparent';
             this.capitaButton.style.backgroundColor = '#28AFB0'
         }
-        if (this.currentData == this.energy_consumption_capita) { //deactivate color, if capita already selected
-            this.currentData = this.energy_consumption;
-            this.capitaButton.style.backgroundColor = 'transparent'
+        else {
+            if (this.currentData == this.energy_consumption_capita) { //deactivate color, if capita already selected
+                this.currentData = this.energy_consumption;
+                this.capitaButton.style.backgroundColor = 'transparent'
 
-        } 
-        if(this.currentData == this.energy_consumption) { //if current is simple energy consumption
-            this.currentData = this.energy_consumption_capita; 
-            this.capitaButton.style.backgroundColor = '#28AFB0'
+            }
+            else { 
+                if(this.currentData == this.energy_consumption_green_house_gaz){
+                    this.currentData = this.energy_consumption_capita;
+                    this.greenHouseGazButton.style.backgroundColor = 'transparent';
+                    this.capitaButton.style.backgroundColor = '#28AFB0'
+                }
+                else {
+                    //if current data is energy_consumption
+                    this.currentData = this.energy_consumption_capita; 
+                    this.capitaButton.style.backgroundColor = '#28AFB0'
+                }
+            }
         }
-        this.UpdateData(this.startDate, this.endDate)
+        this.UpdateData(this.startDate, this.endDate) //do we really need to refilter the data after this
     }
 
     SwitchToGDP() {
@@ -111,20 +141,53 @@ class Main {
             this.currentData = this.energy_consumption_GDP;
             this.capitaButton.style.backgroundColor = 'transparent';
             this.GDPButton.style.backgroundColor = '#28AFB0'
-        } 
-        if (this.currentData == this.energy_consumption_GDP) { //this looks expensive. How does the == work?
-            this.currentData = this.energy_consumption;
-            this.GDPButton.style.backgroundColor = 'transparent'
-        } 
-        if (this.currentData == this.energy_consumption) {
-            this.currentData = this.energy_consumption_GDP;
-            this.GDPButton.style.backgroundColor = '#28AFB0'
+        }
+        else{
+            if (this.currentData == this.energy_consumption_GDP) { //this looks expensive. How does the == work?
+                this.currentData = this.energy_consumption;
+                this.GDPButton.style.backgroundColor = 'transparent'
+            } 
+            else{ 
+                if(this.currentData == this.energy_consumption_green_house_gaz){
+                    this.currentData = this.energy_consumption_GDP;
+                    this.greenHouseGazButton.style.backgroundColor = 'transparent';
+                    this.GDPButton.style.backgroundColor = '#28AFB0'
+                }
+                else{
+                    //if current is energy_consumption
+                    this.currentData = this.energy_consumption_GDP;
+                    this.GDPButton.style.backgroundColor = '#28AFB0'
+                }
+            }
         }
         this.UpdateData(this.startDate, this.endDate)
     }
 
-    SwitchToUnnormalized() {
-
+    SwitchToGreenHouseGaz() {
+        if (this.currentData == this.energy_consumption_capita) {
+            this.currentData = this.energy_consumption_green_house_gaz;
+            this.capitaButton.style.backgroundColor = 'transparent';
+            this.greenHouseGazButton.style.backgroundColor = '#28AFB0'
+        }
+        else{
+            if (this.currentData == this.energy_consumption_GDP) {
+                this.currentData = this.energy_consumption_green_house_gaz;
+                this.GDPButton.style.backgroundColor = 'transparent'
+                this.greenHouseGazButton.style.backgroundColor = '#28AFB0'           
+            } 
+            else{ 
+                if(this.currentData == this.energy_consumption_green_house_gaz){ //if it already was selected
+                    this.currentData = this.energy_consumption;
+                    this.greenHouseGazButton.style.backgroundColor = 'transparent';
+                }
+                else {
+                    //if current is energy_consumption
+                    this.currentData = this.energy_consumption_green_house_gaz;
+                    this.greenHouseGazButton.style.backgroundColor = '#28AFB0'         
+                }
+            }
+        }
+        this.UpdateData(this.startDate, this.endDate)
     }
 
     SwitchtoMonth(){
@@ -155,6 +218,7 @@ class Main {
         const CONSUMPTION_DATA_PATH = 'data/energy_consumption.csv';
         const POPULATION_DATA_PATH = 'data/populations.csv';
         const GDP_DATA_PATH = "data/GDPs.csv";
+        const GREENHOUSEGAZ_DATA_PATH = 'data/green_house_gaz_for_nrj.csv';
         const MAP_DATA_PATH = 'data/europe_map.json';
         const MAP_ID = 'map';
         const GRAPH_ID = 'graph';
@@ -163,6 +227,7 @@ class Main {
         const energy_consumption_promise = d3.csv(CONSUMPTION_DATA_PATH, this.ParseEnergyData);
         const population_promise = d3.csv(POPULATION_DATA_PATH, this.ParsePopulationData);
         const GDP_promise = d3.csv(GDP_DATA_PATH, this.ParseGDPData);
+        const greeHourseGaze_promise = d3.csv(GREENHOUSEGAZ_DATA_PATH, this.ParseGreenHouseGazData);
         const map_promise = d3.json(MAP_DATA_PATH)
 
         this.capitaButton = document.getElementById("capita_button")
@@ -170,6 +235,9 @@ class Main {
 
         this.GDPButton = document.getElementById("GDP_button")
         this.GDPButton.onclick = function() { main.SwitchToGDP(); };
+
+        this.greenHouseGazButton = document.getElementById("green_house_gaz_button")
+        this.greenHouseGazButton.onclick = function() { main.SwitchToGreenHouseGaz(); };
 
         this.monthButton = document.getElementById("month_button");
         this.monthButton.onclick = function() { main.SwitchtoMonth(); };
@@ -180,7 +248,7 @@ class Main {
         this.hoursButton = document.getElementById("hours_button");
         this.hoursButton.onclick = function() { main.SwitchtoHours(); };
 
-        Promise.all([energy_consumption_promise, population_promise, GDP_promise, map_promise]).then((results) => {
+        Promise.all([energy_consumption_promise, population_promise, GDP_promise, greeHourseGaze_promise, map_promise]).then((results) => {
             this.energy_consumption = results[0];
             this.population = results[1];
             this.energy_consumption_capita = this.energy_consumption.map(row => { 
@@ -190,7 +258,13 @@ class Main {
             this.energy_consumption_GDP = this.energy_consumption.map(row => {
                 return GDPMap(row, this.GDP.filter(d => d.Year == this.energy_consumption[0].Date.getFullYear())[0])
             });
-            let europe_map_data = results[3];
+
+            this.greenhousegaz = results[3];
+            this.energy_consumption_green_house_gaz = this.energy_consumption.map(row => {
+                return greenHouseGazMap(row, this.greenhousegaz.filter(d => d.Year == this.energy_consumption[0].Date.getFullYear())[0])
+            });
+
+            let europe_map_data = results[4];
 
             let dates = this.energy_consumption.map(d => d.Date);
             this.startDate = d3.min(dates);
@@ -199,7 +273,7 @@ class Main {
 
             this.mapObject = new MapPlot(MAP_ID, this.energy_consumption, europe_map_data, this);
             this.plotObject = new PeriodicPlot(GRAPH_ID, this.energy_consumption);
-            if(this.plotObject.time_scale === "Month") {
+            if(this.plotObject.time_scale === "Month") { //is this useful?
                 main.SwitchtoMonth();
             }
             new Timeline(TIMELINE_ID, this.energy_consumption, this);
@@ -242,6 +316,26 @@ class Main {
                     NO: row.NO / gdp.NO,
                     PT: row.PT / gdp.PT,
                     SE: row.SE / gdp.SE
+            };   
+        }
+
+        function greenHouseGazMap(row, ghg) {
+            return {Date: row.Date,
+                    AT: row.AT / ghg.AT,
+                    BE: row.BE / ghg.BE,
+                    CH: row.CH / ghg.CH,
+                    DE: row.DE / ghg.DE,
+                    DK: row.DK / ghg.DK,
+                    ES: row.ES / ghg.ES,
+                    FR: row.FR / ghg.FR,
+                    GB: row.AT / ghg.GB,
+                    IE: row.IE / ghg.IE,
+                    IT: row.IT / ghg.IT,
+                    LU: row.LU / ghg.LU,
+                    NL: row.NL / ghg.NL,
+                    NO: row.NO / ghg.NO,
+                    PT: row.PT / ghg.PT,
+                    SE: row.SE / ghg.SE
             };   
         }
     }
