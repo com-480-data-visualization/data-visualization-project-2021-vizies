@@ -51,14 +51,21 @@ class MapPlot {
                         SE: "#652c77"};
 
         // Draw full map
-        L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            id: 'mapbox/light-v9',
+            tileSize: 512,
+            zoomOffset: -1
+        }).addTo(this.map);
+
+        /*L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
             maxZoom: 18,
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
                 'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             id: 'mapbox/light-v9',
             tileSize: 512,
             zoomOffset: -1
-        }).addTo(this.map);
+        }).addTo(this.map);*/
 
         this.countries = ["AT", "BE", "CH", "DE", "DK", "ES", "FR", "GB", "IE", "LT", "LU", "NL", "NO", "PT", "SE"];
 
@@ -246,8 +253,16 @@ class MapPlot {
             grades = [];
             for (var j = 0; j <= N; j++) {
                 // Logarithmic scale: grades.push(Math.round(minimum*((maximum/minimum)**(j/N))/100)*100);
-                if (maximum > 10000){grades.push(Math.round((minimum+j*(maximum-minimum)/N)/100)*100)}
-                else {grades.push(Math.round((minimum+j*(maximum-minimum)/N)*10000)/10000)}
+
+                if (maximum > 10000){
+                    // If the maximum value is very large, round values to hundreds
+                    grades.push(Math.round((minimum+j*(maximum-minimum)/N)/100)*100)}
+                else if (maximum > 1000){
+                    // If the maximum value is medium, round values to tens
+                    grades.push(Math.round((minimum+j*(maximum-minimum)/N)/10)*10)}
+                else {
+                    // If the maximum value is small, round values to 10e-5
+                    grades.push(Math.round((minimum+j*(maximum-minimum)/N)*10000)/10000)}
             }
 
             var div = L.DomUtil.create('div', 'info legend'),

@@ -42,7 +42,7 @@ h4 { font-size: 1.25rem; }
 	padding-top: 1rem;
 	padding-bottom: 1rem;
 
-	background-color: #28AFB0;
+	background-color: #f2f2f2;
 
 	/* Center the title using flexbox */
 	display: flex;
@@ -52,8 +52,9 @@ h4 { font-size: 1.25rem; }
 
 /* Style of the title inside the box */
 .title-row h1 {
+	font: 18px/22px Arial, Helvetica, sans-serif;
 	font-size: 2.5rem;
-	color: white;
+	color: black;
 	font-variant: small-caps;
 }
 
@@ -95,7 +96,7 @@ display: table;
 }
 
 .button:hover {
-	background-color: lightblue;
+	background-color: #f2f2f2;
 }
 
 .button img {
@@ -174,7 +175,7 @@ display: table;
 }
 
 .timeline .selection {
-	fill: #28AFB0;
+	fill: #b8b8b8;
 	fill-opacity: 0.3;
 	height: 3px;
 }
@@ -182,7 +183,7 @@ display: table;
 .timeline .handle {
 	width: 3px;
 	height: 2px;
-	fill: #28AFB0;
+	fill: #b8b8b8;
 	fill-opacity: 0.7;
 	stroke:black;
 	stroke-width:0.1px;
