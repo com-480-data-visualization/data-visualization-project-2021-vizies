@@ -1,14 +1,38 @@
+/* ===== CONSTANTS ===== */
+// Data paths
+const CONSUMPTION_DATA_PATH = 'data/energy_consumption.csv';
+const POPULATION_DATA_PATH = 'data/populations.csv';
+const GDP_DATA_PATH = "data/GDPs.csv";
+const GREENHOUSEGAZ_DATA_PATH = 'data/green_house_gaz_for_nrj.csv';
+const MAP_DATA_PATH = 'data/europe_map.json';
 
+// HTML ID:s
+const MAP_ID = 'map';
+const GRAPH_ID = 'graph';
+const TIMELINE_ID = 'timeline';
+const CAPITA_BUTTON_ID = 'capita_button';
+const GDP_BUTTON_ID = 'GDP_button';
+const GREEN_BUTTON_ID = 'green_house_gaz_button';
+
+// Button colors
+const UN_SELECTED_COLOR = 'transparent';
+const SELECTED_COLOR = '#28AFB0';
+
+
+/*
+* Main class that creates all smaller classes and handles communication between clases.
+*/
 class Main {
-
     // Population data 
     // https://appsso.eurostat.ec.europa.eu/nui/submitViewTableAction.do
 
     mapObject;
     plotObject;
 
-    ParseEnergyData(d) {
+    // Parses used for all csv files.
+    ParseData(d) {
         return {Date : new Date(d.DATE),
+                Year: parseInt(d.year),
                 AT: parseInt(d.at),
                 BE: parseInt(d.be),
                 CH: parseInt(d.ch),
@@ -27,66 +51,7 @@ class Main {
         }
     }
 
-    ParsePopulationData(d) {
-        return {Year: parseInt(d.year),
-            AT: parseInt(d.at),
-            BE: parseInt(d.be),
-            CH: parseInt(d.ch),
-            DE: parseInt(d.de),
-            DK: parseInt(d.dk),
-            ES: parseInt(d.es),
-            FR: parseInt(d.fr),
-            GB: parseInt(d.gb),
-            IE: parseInt(d.ie),
-            IT: parseInt(d.it),
-            LU: parseInt(d.lu),
-            NL: parseInt(d.nl),
-            NO: parseInt(d.no),
-            PT: parseInt(d.pt),
-            SE: parseInt(d.se)
-        }
-    }
-
-    ParseGDPData(d) {
-        return {Year: parseInt(d.year),
-            AT: parseInt(d.at),
-            BE: parseInt(d.be),
-            CH: parseInt(d.ch),
-            DE: parseInt(d.de),
-            DK: parseInt(d.dk),
-            ES: parseInt(d.es),
-            FR: parseInt(d.fr),
-            GB: parseInt(d.gb),
-            IE: parseInt(d.ie),
-            IT: parseInt(d.it),
-            LU: parseInt(d.lu),
-            NL: parseInt(d.nl),
-            NO: parseInt(d.no),
-            PT: parseInt(d.pt),
-            SE: parseInt(d.se)
-        }
-    }
-
-    ParseGreenHouseGazData(d) {
-        return {Year: parseInt(d.year),
-            AT: parseInt(d.at),
-            BE: parseInt(d.be),
-            CH: parseInt(d.ch),
-            DE: parseInt(d.de),
-            DK: parseInt(d.dk),
-            ES: parseInt(d.es),
-            FR: parseInt(d.fr),
-            GB: parseInt(d.gb),
-            IE: parseInt(d.ie),
-            IT: parseInt(d.it),
-            LU: parseInt(d.lu),
-            NL: parseInt(d.nl),
-            NO: parseInt(d.no),
-            PT: parseInt(d.pt),
-            SE: parseInt(d.se)
-        }
-    }
-
+    // Given a start and end date update the data and send the new data to the map and plot.
     UpdateData(startDate, endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
@@ -97,247 +62,170 @@ class Main {
         this.mapObject.updateMap(data);
         this.plotObject.updatePlot(data);
     }
-    AddCountry(country) {
+
+    // Function called when selected a country on the map
+    SelectCountry(country) {
         this.plotObject.updatePlotAddCountry(country);
     }
-    RemoveCountry(country){
+
+    // Called when de selecting country on the map.
+    DeSelectCountry(country){
         this.plotObject.updatePlotRemoveCountry(country);
     }
 
+    // Called to update the timescale on the plot.
     UpdateTimeScale(time_scale) {
         this.plotObject.updatePlotTimeScale(time_scale)
     }
 
-    SwitchToCapita() {
-        if (this.currentData == this.energy_consumption_GDP) { //this looks expensive. How does the == work?
-            this.currentData = this.energy_consumption_capita;
-            this.GDPButton.style.backgroundColor = 'transparent';
-            this.capitaButton.style.backgroundColor = '#28AFB0'
+    // Called when pressing one of the normalization buttons. 
+    // Sets correct colors on buttons and updating the displayed data.
+    ClickNormalizeButton(normalizeButton) {
+        if (normalizeButton.isSelected()) {
+            this.UnSelectAllNormalizeButtons();
+            this.currentData = this.energy_consumption;
         }
         else {
-            if (this.currentData == this.energy_consumption_capita) { //deactivate color, if capita already selected
-                this.currentData = this.energy_consumption;
-                this.capitaButton.style.backgroundColor = 'transparent'
-
-            }
-            else { 
-                if(this.currentData == this.energy_consumption_green_house_gaz){
-                    this.currentData = this.energy_consumption_capita;
-                    this.greenHouseGazButton.style.backgroundColor = 'transparent';
-                    this.capitaButton.style.backgroundColor = '#28AFB0'
-                }
-                else {
-                    //if current data is energy_consumption
-                    this.currentData = this.energy_consumption_capita; 
-                    this.capitaButton.style.backgroundColor = '#28AFB0'
-                }
-            }
+            this.UnSelectAllNormalizeButtons();
+            normalizeButton.select();
+            this.currentData = normalizeButton.getData();
         }
-        this.UpdateData(this.startDate, this.endDate) //do we really need to refilter the data after this
+        this.UpdateData(this.startDate, this.endDate);
     }
 
-    SwitchToGDP() {
-        if (this.currentData == this.energy_consumption_capita) {
-            this.currentData = this.energy_consumption_GDP;
-            this.capitaButton.style.backgroundColor = 'transparent';
-            this.GDPButton.style.backgroundColor = '#28AFB0'
-        }
-        else{
-            if (this.currentData == this.energy_consumption_GDP) { //this looks expensive. How does the == work?
-                this.currentData = this.energy_consumption;
-                this.GDPButton.style.backgroundColor = 'transparent'
-            } 
-            else{ 
-                if(this.currentData == this.energy_consumption_green_house_gaz){
-                    this.currentData = this.energy_consumption_GDP;
-                    this.greenHouseGazButton.style.backgroundColor = 'transparent';
-                    this.GDPButton.style.backgroundColor = '#28AFB0'
-                }
-                else{
-                    //if current is energy_consumption
-                    this.currentData = this.energy_consumption_GDP;
-                    this.GDPButton.style.backgroundColor = '#28AFB0'
-                }
-            }
-        }
-        this.UpdateData(this.startDate, this.endDate)
+    // Deselects all normalization buttons, resetting their color.
+    UnSelectAllNormalizeButtons() {
+        this.capitaButton.deSelect();
+        this.gdpButton.deSelect();
+        this.greenButton.deSelect();
     }
 
-    SwitchToGreenHouseGaz() {
-        if (this.currentData == this.energy_consumption_capita) {
-            this.currentData = this.energy_consumption_green_house_gaz;
-            this.capitaButton.style.backgroundColor = 'transparent';
-            this.greenHouseGazButton.style.backgroundColor = '#28AFB0'
-        }
-        else{
-            if (this.currentData == this.energy_consumption_GDP) {
-                this.currentData = this.energy_consumption_green_house_gaz;
-                this.GDPButton.style.backgroundColor = 'transparent'
-                this.greenHouseGazButton.style.backgroundColor = '#28AFB0'           
-            } 
-            else{ 
-                if(this.currentData == this.energy_consumption_green_house_gaz){ //if it already was selected
-                    this.currentData = this.energy_consumption;
-                    this.greenHouseGazButton.style.backgroundColor = 'transparent';
-                }
-                else {
-                    //if current is energy_consumption
-                    this.currentData = this.energy_consumption_green_house_gaz;
-                    this.greenHouseGazButton.style.backgroundColor = '#28AFB0'         
-                }
-            }
-        }
-        this.UpdateData(this.startDate, this.endDate)
-    }
-
-    SwitchtoMonth(){
-        this.dayButton.style.backgroundColor = 'transparent';
-        this.hoursButton.style.backgroundColor = 'transparent';
-        this.UpdateTimeScale("Month");
-        this.monthButton.style.backgroundColor = '#28AFB0'
-    }
-
-    SwitchtoDay(){
-        this.hoursButton.style.backgroundColor = 'transparent';
-        this.monthButton.style.backgroundColor = 'transparent';
-        this.UpdateTimeScale("Day");
-        this.dayButton.style.backgroundColor = '#28AFB0'
-    }
-
-    SwitchtoHours(){
-        this.dayButton.style.backgroundColor = 'transparent';
-        this.monthButton.style.backgroundColor = 'transparent';
-        this.UpdateTimeScale("Hours");
-        this.hoursButton.style.backgroundColor = '#28AFB0'
+    // Called when one of the plot time scale buttons is pressed, set correct color and updates time scale.
+    ClickPlotTimeScaleButton(time_scale) {
+        this.monthButton.style.backgroundColor = (time_scale == 'Month') ? SELECTED_COLOR : UN_SELECTED_COLOR;
+        this.dayButton.style.backgroundColor = (time_scale == 'Day') ? SELECTED_COLOR : UN_SELECTED_COLOR;
+        this.hoursButton.style.backgroundColor = (time_scale == 'Hours') ? SELECTED_COLOR : UN_SELECTED_COLOR;
+        this.UpdateTimeScale(time_scale);
     }
 
     constructor() {
         const main = this;
 
-        /* ===== CONSTANST ===== */
-        const CONSUMPTION_DATA_PATH = 'data/energy_consumption.csv';
-        const POPULATION_DATA_PATH = 'data/populations.csv';
-        const GDP_DATA_PATH = "data/GDPs.csv";
-        const GREENHOUSEGAZ_DATA_PATH = 'data/green_house_gaz_for_nrj.csv';
-        const MAP_DATA_PATH = 'data/europe_map.json';
-        const MAP_ID = 'map';
-        const GRAPH_ID = 'graph';
-        const TIMELINE_ID = 'timeline';
-
-        const energy_consumption_promise = d3.csv(CONSUMPTION_DATA_PATH, this.ParseEnergyData);
-        const population_promise = d3.csv(POPULATION_DATA_PATH, this.ParsePopulationData);
-        const GDP_promise = d3.csv(GDP_DATA_PATH, this.ParseGDPData);
-        const greeHourseGaze_promise = d3.csv(GREENHOUSEGAZ_DATA_PATH, this.ParseGreenHouseGazData);
+        // Promises for all data
+        const energy_consumption_promise = d3.csv(CONSUMPTION_DATA_PATH, this.ParseData);
+        const population_promise = d3.csv(POPULATION_DATA_PATH, this.ParseData);
+        const GDP_promise = d3.csv(GDP_DATA_PATH, this.ParseData);
+        const greeHourseGaze_promise = d3.csv(GREENHOUSEGAZ_DATA_PATH, this.ParseData);
         const map_promise = d3.json(MAP_DATA_PATH)
 
-        this.capitaButton = document.getElementById("capita_button")
-        this.capitaButton.onclick = function() { main.SwitchToCapita(); };
-
-        this.GDPButton = document.getElementById("GDP_button")
-        this.GDPButton.onclick = function() { main.SwitchToGDP(); };
-
-        this.greenHouseGazButton = document.getElementById("green_house_gaz_button")
-        this.greenHouseGazButton.onclick = function() { main.SwitchToGreenHouseGaz(); };
-
+        // Setup circular plot time scale buttons.
         this.monthButton = document.getElementById("month_button");
-        this.monthButton.onclick = function() { main.SwitchtoMonth(); };
+        this.monthButton.onclick = function() { main.ClickPlotTimeScaleButton('Month'); };
 
         this.dayButton = document.getElementById("day_button");
-        this.dayButton.onclick = function() { main.SwitchtoDay(); };
+        this.dayButton.onclick = function() { main.ClickPlotTimeScaleButton('Day'); };
 
         this.hoursButton = document.getElementById("hours_button");
-        this.hoursButton.onclick = function() { main.SwitchtoHours(); };
+        this.hoursButton.onclick = function() { main.ClickPlotTimeScaleButton('Hours'); };
 
+        // After promise.
         Promise.all([energy_consumption_promise, population_promise, GDP_promise, greeHourseGaze_promise, map_promise]).then((results) => {
             this.energy_consumption = results[0];
-            this.population = results[1];
-            this.energy_consumption_capita = this.energy_consumption.map(row => { 
-                return capitalMap(row, this.population.filter(d => d.Year == this.energy_consumption[0].Date.getFullYear())[0]);
-            });
-            this.GDP = results[2];
-            this.energy_consumption_GDP = this.energy_consumption.map(row => {
-                return GDPMap(row, this.GDP.filter(d => d.Year == this.energy_consumption[0].Date.getFullYear())[0])
-            });
 
-            this.greenhousegaz = results[3];
-            this.energy_consumption_green_house_gaz = this.energy_consumption.map(row => {
-                return greenHouseGazMap(row, this.greenhousegaz.filter(d => d.Year == this.energy_consumption[0].Date.getFullYear())[0])
-            });
+            // Setup energy per capita
+            const energy_consumption_capita = normalizeData(this.energy_consumption, results[1]);
+            this.capitaButton = new NormalizeButton(energy_consumption_capita, document.getElementById(CAPITA_BUTTON_ID));
+            document.getElementById(CAPITA_BUTTON_ID).onclick = function() { main.ClickNormalizeButton(main.capitaButton); };
+
+            // Setup energy per GDP
+            const energy_consumption_GDP = normalizeData(this.energy_consumption, results[2]);
+            this.gdpButton = new NormalizeButton(energy_consumption_GDP, document.getElementById(GDP_BUTTON_ID));
+            document.getElementById(GDP_BUTTON_ID).onclick = function() { main.ClickNormalizeButton(main.gdpButton); };
+
+            // Setup energy based on green house gaz
+            const energy_consumption_green_house_gaz = normalizeData(this.energy_consumption, results[3]);
+            this.greenButton = new NormalizeButton(energy_consumption_green_house_gaz, document.getElementById(GREEN_BUTTON_ID));
+            document.getElementById(GREEN_BUTTON_ID).onclick = function() { main.ClickNormalizeButton(main.greenButton); };
 
             let europe_map_data = results[4];
 
+            // Set the dates.
             let dates = this.energy_consumption.map(d => d.Date);
             this.startDate = d3.min(dates);
             this.endDate = d3.max(dates);
             this.currentData = this.energy_consumption;
 
+            // Create all plots and timeline.
             this.mapObject = new MapPlot(MAP_ID, this.energy_consumption, europe_map_data, this);
             this.plotObject = new PeriodicPlot(GRAPH_ID, this.energy_consumption);
-            if(this.plotObject.time_scale === "Month") { //is this useful?
-                main.SwitchtoMonth();
-            }
+            main.ClickPlotTimeScaleButton('Month');
             new Timeline(TIMELINE_ID, this.energy_consumption, this);
         })
 
-        function capitalMap(row, population) {
-            return {Date: row.Date,
-                    AT: row.AT / population.AT,
-                    BE: row.BE / population.BE,
-                    CH: row.CH / population.CH,
-                    DE: row.DE / population.DE,
-                    DK: row.DK / population.DK,
-                    ES: row.ES / population.ES,
-                    FR: row.FR / population.FR,
-                    GB: row.AT / population.GB,
-                    IE: row.IE / population.IE,
-                    IT: row.IT / population.IT,
-                    LU: row.LU / population.LU,
-                    NL: row.NL / population.NL,
-                    NO: row.NO / population.NO,
-                    PT: row.PT / population.PT,
-                    SE: row.SE / population.SE
-            };   
+        // Normalize given data based on a given normalize data, if value is missing use the latest.
+        function normalizeData(dataToNormalize, normalizeData) {
+            return dataToNormalize.map(row => {
+                let normalizer = normalizeData.filter(d => d.Year == row.Date.getFullYear())[0];
+                if (normalizer == null) {
+                    normalizer = normalizeData[normalizeData.length -1];
+                }
+                return mapNormalizer(row, normalizer);
+            });
         }
 
-        function GDPMap(row, gdp) {
+        // Mapper used to normalize the energy consumption data based on a given normalizer
+        function mapNormalizer(row, normalizer) {
             return {Date: row.Date,
-                    AT: row.AT / gdp.AT,
-                    BE: row.BE / gdp.BE,
-                    CH: row.CH / gdp.CH,
-                    DE: row.DE / gdp.DE,
-                    DK: row.DK / gdp.DK,
-                    ES: row.ES / gdp.ES,
-                    FR: row.FR / gdp.FR,
-                    GB: row.AT / gdp.GB,
-                    IE: row.IE / gdp.IE,
-                    IT: row.IT / gdp.IT,
-                    LU: row.LU / gdp.LU,
-                    NL: row.NL / gdp.NL,
-                    NO: row.NO / gdp.NO,
-                    PT: row.PT / gdp.PT,
-                    SE: row.SE / gdp.SE
+                    AT: row.AT / normalizer.AT,
+                    BE: row.BE / normalizer.BE,
+                    CH: row.CH / normalizer.CH,
+                    DE: row.DE / normalizer.DE,
+                    DK: row.DK / normalizer.DK,
+                    ES: row.ES / normalizer.ES,
+                    FR: row.FR / normalizer.FR,
+                    GB: row.AT / normalizer.GB,
+                    IE: row.IE / normalizer.IE,
+                    IT: row.IT / normalizer.IT,
+                    LU: row.LU / normalizer.LU,
+                    NL: row.NL / normalizer.NL,
+                    NO: row.NO / normalizer.NO,
+                    PT: row.PT / normalizer.PT,
+                    SE: row.SE / normalizer.SE
             };   
         }
+    }
+}
 
-        function greenHouseGazMap(row, ghg) {
-            return {Date: row.Date,
-                    AT: row.AT / ghg.AT,
-                    BE: row.BE / ghg.BE,
-                    CH: row.CH / ghg.CH,
-                    DE: row.DE / ghg.DE,
-                    DK: row.DK / ghg.DK,
-                    ES: row.ES / ghg.ES,
-                    FR: row.FR / ghg.FR,
-                    GB: row.AT / ghg.GB,
-                    IE: row.IE / ghg.IE,
-                    IT: row.IT / ghg.IT,
-                    LU: row.LU / ghg.LU,
-                    NL: row.NL / ghg.NL,
-                    NO: row.NO / ghg.NO,
-                    PT: row.PT / ghg.PT,
-                    SE: row.SE / ghg.SE
-            };   
-        }
+/*
+* Class for nomralization buttons, hold the actual button and the normalization data.
+*/
+class NormalizeButton {
+    // To check if button is selected.
+    isSelected() {
+        return this.selected;
+    }
+
+    // Select button
+    select() {
+        this.selected = true;
+        this.button.style.backgroundColor = SELECTED_COLOR;
+    }
+
+    // Deselect button
+    deSelect() {
+        this.selected = false;
+        this.button.style.backgroundColor = UN_SELECTED_COLOR;
+    }
+
+    // Gets the normalization data for this button.
+    getData() {
+        return this.data;
+    }
+
+    constructor(data, button) {
+        this.data = data;
+        this.button = button;
+        this.selected = false;
     }
 }
 

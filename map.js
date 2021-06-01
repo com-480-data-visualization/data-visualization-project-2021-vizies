@@ -124,7 +124,7 @@ class MapPlot {
                 if (index > -1) {
                     selectedCountries.splice(index, 1);
                 };   
-                main.RemoveCountry(layer.feature.properties.ISO2)
+                main.DeSelectCountry(layer.feature.properties.ISO2)
             }
             else {
                 var color = color_func[layer.feature.properties.ISO2];
@@ -132,7 +132,7 @@ class MapPlot {
                 style.color = color;
                 layer.setStyle(style);
                 selectedCountries.push(layer._leaflet_id);
-                main.AddCountry(layer.feature.properties.ISO2, color);
+                main.SelectCountry(layer.feature.properties.ISO2);
             }
         }
 
