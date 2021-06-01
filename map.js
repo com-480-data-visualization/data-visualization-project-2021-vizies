@@ -18,6 +18,14 @@ class MapPlot {
         fillOpacity: 0.9
     }
 
+    // border style for when mouse off countries
+    offStyle = {
+        weight: 2,
+        color: 'white',
+        dashArray: '',
+        fillOpacity: 0.9
+    }
+
     // style for selected country
     selectedStyle = {
         weight: 2,
@@ -57,15 +65,6 @@ class MapPlot {
             tileSize: 512,
             zoomOffset: -1
         }).addTo(this.map);
-
-        /*L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw', {
-            maxZoom: 18,
-            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, ' +
-                'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-            id: 'mapbox/light-v9',
-            tileSize: 512,
-            zoomOffset: -1
-        }).addTo(this.map);*/
 
         this.countries = ["AT", "BE", "CH", "DE", "DK", "ES", "FR", "GB", "IE", "LT", "LU", "NL", "NO", "PT", "SE"];
 
@@ -115,8 +114,10 @@ class MapPlot {
 
         // Function to reset style countries when mouse off the country
         function resetHighlight(e) {
-            if (!(selectedCountries.includes(e.target._leaflet_id))) {
-                MapAttributes.geojson.resetStyle(e.target);
+            var layer = e.target;
+
+            if (!(selectedCountries.includes(layer._leaflet_id))) {
+                layer.setStyle(MapAttributes.offStyle);
             }
             MapAttributes.info.update();
         }
