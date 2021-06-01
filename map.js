@@ -238,6 +238,7 @@ class MapPlot {
             }
             this.geojson.setStyle(country_style);
             MapAttributes.updateLegend(energy_copy);
+            MapAttributes.updateInfo(energy_copy);
         }
 
         updateLegend(data) {
@@ -285,5 +286,41 @@ class MapPlot {
         };
 
         MapAttributes.legend.addTo(this.map);
+        }
+
+        updateInfo(data){
+        const MapAttributes = this;
+        const minimum = Math.min(...Object.values(data));
+        const maximum = Math.max(...Object.values(data));
+
+        MapAttributes.map.removeControl(MapAttributes.info);
+
+        MapAttributes.info = L.control();
+
+        MapAttributes.info.onAdd = function (map) {
+        	this._div = L.DomUtil.create('div', 'info');
+        	this.update();
+        	return this._div;
+        };
+
+        MapAttributes.info.update = function (feat) {
+            const value = function(feat, maximum) {
+                if (maximum > 10000){
+                    return Math.round(data[feat.properties.ISO2]/100)*100
+                }
+                else if(maximum > 1000){
+                    return Math.round(data[feat.properties.ISO2]/10)*10
+                }
+                else {
+                    return Math.round(data[feat.properties.ISO2]*100000)/100000
+                }
+            }
+        	this._div.innerHTML = '<h4>Energy consumption</h4>' +  (feat ?
+        		'<b>' + feat.properties.NAME + '</b><br />' + value(feat, maximum) + ' MWh '
+        		: 'Hover over a state');
+            // data[feat.properties.ISO2]
+        };
+
+        MapAttributes.info.addTo(MapAttributes.map);
         }
 }
