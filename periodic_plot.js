@@ -1,7 +1,7 @@
 
 class PeriodicPlot {
 
-    constructor(svg_element_id, energy_consumption, start=energy_consumption[0].Date, end=energy_consumption[8500].Date) {
+    constructor(svg_element_id, energy_consumption) {
 
 
 		/////////////////////////////////////////////////////////
@@ -17,10 +17,8 @@ class PeriodicPlot {
 		const HALF_PI = Math.PI / 2;
 
 		this.data = energy_consumption;
-		this.country_list =["FR", "DE", "SE"];
-		this.default = true;
-		this.start=start;
-		this.end = end;
+		this.country_list =[];
+		this.empty_list = true;
 		this.time_scale = "Month";
 
 
@@ -490,19 +488,21 @@ class PeriodicPlot {
 
 
 		updatePlot(newData) {
-			this.data = newData;
-			const data = this.get_data(this.data, this.country_list, this.time_scale);
-			let svg_radar1 = this.RadarChart(".graph", data, this.radarChartOptions);
+			if(this.country_list.length == 0) {
+				this.data = newData;
+				const data = this.get_data(this.data, this.country_list, this.time_scale);
+			}
+			else {
+				this.data = newData;
+				const data = this.get_data(this.data, this.country_list, this.time_scale);
+				let svg_radar1 = this.RadarChart(".graph", data, this.radarChartOptions);
+			}
 		  }
 
 		updatePlotAddCountry(country){
-			if (this.default) {//the default country list is currently FR, DE, SE. This deletes that
-				this.country_list = []
-			}
 			this.country_list.push(country);
 			const data = this.get_data(this.data, this.country_list, this.time_scale)
 			this.RadarChart(".graph", data, this.radarChartOptions);
-			this.default=false;
 		}
 
 		updatePlotRemoveCountry(country){
@@ -518,8 +518,14 @@ class PeriodicPlot {
 		}
 
 		updatePlotTimeScale(time_scale){
-			this.time_scale = time_scale;
-			const data = this.get_data(this.data, this.country_list, this.time_scale)
-			this.RadarChart(".graph", data, this.radarChartOptions);
+			if(this.country_list.length == 0) {
+				this.time_scale = time_scale;
+				const data = this.get_data(this.data, this.country_list, this.time_scale)
+			}
+			else{
+				this.time_scale = time_scale;
+				const data = this.get_data(this.data, this.country_list, this.time_scale)
+				this.RadarChart(".graph", data, this.radarChartOptions);
+			}
 		}
 	}
