@@ -1,62 +1,141 @@
+const UN_SELECTED_BORDER_COLOR = 'white';
+const HOVER_BORDER_COLOR = '#666';
 
+/*
+* Class containing drawing and functionality of the map. 
+* Created by a leaflet map.
+*/
 class MapPlot {
 
     // Default style when unselected and unhovered
     defaultStyle = {
         weight: 2,
         opacity: 1,
-        color: 'white',
+        color: UN_SELECTED_BORDER_COLOR,
         dashArray: '1',
         fillOpacity: 0.9,
         };
 
-    // border style for when mouse hover over country
-    hoverStyle = {
-        weight: 2,
-        color: '#666',
-        dashArray: '',
-        fillOpacity: 0.9
+    // Get max of the current data
+    getMaxOfData() {
+        return Math.max(this.data.AT, this.data.BE, this.data.CH, this.data.DE, this.data.DK,
+                        this.data.ES, this.data.FR, this.data.GB, this.data.IE, this.data.IT,
+                        this.data.LU, this.data.NL, this.data.NO, this.data.PT, this.data.SE);
+    };
+
+    // Get min of the current data
+    getMinOfData() {
+        return Math.min(this.data.AT, this.data.BE, this.data.CH, this.data.DE, this.data.DK,
+                        this.data.ES, this.data.FR, this.data.GB, this.data.IE, this.data.IT,
+                        this.data.LU, this.data.NL, this.data.NO, this.data.PT, this.data.SE);
+    };
+
+    // Update current data, min, max and color scale, given new data.
+    updateData(data) {
+        const count = data.length;
+        const data_sum = data.reduce((acc, cur) => {
+            for(var key of Object.keys(cur)){
+                acc[key] = acc[key] + cur[key] || cur[key];
+            }
+            return acc;
+        }, {})
+
+        this.data = Object.keys(data_sum).reduce((acc, key) => {acc[key] = data_sum[key]/count; return acc; }, {});
+        this.dataMax = this.getMaxOfData();
+        this.dataMin = this.getMinOfData();
+        this.colorScale.domain([this.dataMin, (this.dataMin + this.dataMax)/2, this.dataMax])
+    };
+
+    // Used for the information squares, gets rounded values based on the maximum of data.
+    getRoundedValue(value) {
+        if (this.dataMax > 10000){
+            return Math.round(value/100)*100;
+        }
+        else if(this.dataMax > 1000){
+            return Math.round(value/10)*10;
+        }
+        else {
+            return Math.round(value*100000)/100000;
+        }
     }
 
-    // border style for when mouse off countries
-    offStyle = {
-        weight: 2,
-        color: 'white',
-        dashArray: '',
-        fillOpacity: 0.9
-    }
+    // Add a new square in the right corner displaying what each color represents.
+    addColorInfo() {
+        const MapAttributes = this;
+        const N = 10; // Number of squares
 
-    // style for selected country
-    selectedStyle = {
-        weight: 2,
-        dashArray: '',
-        fillOpacity: 0.9
+        MapAttributes.legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'info legend'),
+                                labels = [],
+                                from, to;
+
+            // loop through our density intervals and generate a label with a colored square for each interval
+            for (var i = 0; i < N; i++) {
+                from = MapAttributes.getRoundedValue(MapAttributes.dataMin + i*(MapAttributes.dataMax-MapAttributes.dataMin)/N);
+                to = MapAttributes.getRoundedValue(MapAttributes.dataMin + (i+1)*(MapAttributes.dataMax-MapAttributes.dataMin)/N);
+                labels.push('<i style="background:' + MapAttributes.colorScale(from) + '"></i> ' +
+                            from + (to ? '&ndash;' + to : '+'));
+            }
+
+            div.innerHTML = labels.join('</br>');
+            return div;
+        };
+
+        this.legend.addTo(this.map);
+    };
+
+    // Add a new square at the top right corner displaying the consumption of the highlighted country.
+    addTopRightInfo() {
+        const MapAttributes = this;
+        MapAttributes.info.onAdd = function (map) {
+        	this._div = L.DomUtil.create('div', 'info');
+        	this.update();
+        	return this._div;
+        };
+
+        MapAttributes.info.update = function (feat) {
+        	this._div.innerHTML = '<h4>Energy consumption</h4>' +  (feat ?
+        		'<b>' + feat.properties.NAME + '</b><br />' + 
+                MapAttributes.getRoundedValue(MapAttributes.data[feat.properties.ISO2]) + ' MWh '
+        		: 'Hover over a country');
+        };
+
+        MapAttributes.info.addTo(MapAttributes.map);
     }
 
     constructor(svg_element_id, energy_consumption, europe_map_data, main) {
         const MapAttributes = this;
-        this.energy_consumption = energy_consumption;
-        this.europe_map_data = europe_map_data;
-
-        this.map = L.map(svg_element_id, {scrollWheelZoom: false,
-            zoomControl: false, dragging:false, doubleClickZoom: false, zoomSnap:0.1}).setView([51, 9]).setZoom(4.3);
-
         var selectedCountries = [];
+        
+        this.colorScale = d3.scaleLinear()
+                            .domain([0, 1, 2])
+                            .range(['#ffed7e', '#f09c31', '#4c080f']);
+        this.updateData(energy_consumption);
+        
+        // Create leaflet map
+        this.map = L.map(svg_element_id, { scrollWheelZoom: false,
+                                           zoomControl: false,
+                                           dragging:false,
+                                           doubleClickZoom: false,
+                                           zoomSnap:0.1
+                                        }).setView([51, 9]).setZoom(4.3);
+        
+        // SHOULD BE MOVED TO MAIN
         const color_func = {AT: "#FF0000",
-                        BE: "#FF8000",
-                        CH: "#FFFF00",
-                        DE: "#33ff00",
-                        DK: "#2243B6",
-                        ES: "#5DADEC",
-                        FR: "#9C51B6",
-                        GB: "#A83731",
-                        IE: "#AF6E4D",
-                        IT: "#E936A7",
-                        LU: "#00ffe1",
-                        NL: "#ff0099",
-                        NO: "#1d8000",
-                        PT: "#694600",
-                        SE: "#652c77"};
+                            BE: "#FF8000",
+                            CH: "#FFFF00",
+                            DE: "#33ff00",
+                            DK: "#2243B6",
+                            ES: "#5DADEC",
+                            FR: "#9C51B6",
+                            GB: "#A83731",
+                            IE: "#AF6E4D",
+                            IT: "#E936A7",
+                            LU: "#00ffe1",
+                            NL: "#ff0099",
+                            NO: "#1d8000",
+                            PT: "#694600",
+                            SE: "#652c77"};
 
         // Draw full map
         L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {
@@ -66,261 +145,93 @@ class MapPlot {
             zoomOffset: -1
         }).addTo(this.map);
 
-        this.countries = ["AT", "BE", "CH", "DE", "DK", "ES", "FR", "GB", "IE", "LT", "LU", "NL", "NO", "PT", "SE"];
+        this.legend = L.control({position: 'bottomright'});
+        this.addColorInfo();
 
         this.info = L.control();
-
-        this.info.onAdd = function (map) {
-        	this._div = L.DomUtil.create('div', 'info');
-        	this.update();
-        	return this._div;
-        };
-
-
-        // Copy energy_consumption to remove dates and get true maximum value
-        var energy_copy = JSON.parse(JSON.stringify(energy_consumption));
-        delete energy_copy[0]['Date'];
-
-        // Get the minimum and maximum values
-        const minimum = Math.min(...Object.values(energy_copy[0]));
-        const maximum = Math.max(...Object.values(energy_copy[0]));
-
-        this.info.update = function (feat) {
-        	this._div.innerHTML = '<h4>Energy consumption</h4>' +  (feat ?
-        		'<b>' + feat.properties.NAME + '</b><br />' + MapAttributes.energy_consumption[0][feat.properties.ISO2] + ' MWh '
-        		: 'Hover over a state');
-        };
-
-        this.info.addTo(this.map);
+        this.addTopRightInfo();
 
         // Function to associate energy consumption value with fill in color
-        function style_country(features) {
+        function style_country(feat) {
             var style = MapAttributes.defaultStyle;
-            style.fillColor = MapAttributes.getColorScale(MapAttributes.energy_consumption[0][features.properties.ISO2],
-                minimum, maximum);
+            style.fillColor = MapAttributes.colorScale(MapAttributes.data[feat.properties.ISO2]);
             return style;
         }
 
         // Function for mouseover interaction
-        function highlightFeature(e) {
+        function highlightCountry(e) {
             var layer = e.target;
             MapAttributes.info.update(layer.feature);
 
             // Change the style with mouseover only if was not selected before by click action
             if (!(selectedCountries.includes(layer._leaflet_id))){
-                layer.setStyle(MapAttributes.hoverStyle);
+                layer.setStyle({color: HOVER_BORDER_COLOR});
             }
         }
 
         // Function to reset style countries when mouse off the country
-        function resetHighlight(e) {
+        function unHighlightCountry(e) {
             var layer = e.target;
 
             if (!(selectedCountries.includes(layer._leaflet_id))) {
-                layer.setStyle(MapAttributes.offStyle);
+                layer.setStyle({color: UN_SELECTED_BORDER_COLOR});
             }
             MapAttributes.info.update();
         }
 
         // Function to send the clicked countries
-        function sendCountries(e){
+        function selectCountry(e){
             const layer = e.target;
 
             if (selectedCountries.includes(layer._leaflet_id)) {
-                MapAttributes.geojson.resetStyle(layer)
+                layer.setStyle({color: HOVER_BORDER_COLOR});
                 const index = selectedCountries.indexOf(layer._leaflet_id);
                 if (index > -1) {
                     selectedCountries.splice(index, 1);
                 };   
-                main.DeSelectCountry(layer.feature.properties.ISO2)
+                main.DeselectCountry(layer.feature.properties.ISO2);
             }
             else {
-                var color = color_func[layer.feature.properties.ISO2];
-                var style = MapAttributes.selectedStyle;
-                style.color = color;
-                layer.setStyle(style);
+                layer.setStyle({color: color_func[layer.feature.properties.ISO2]});
                 selectedCountries.push(layer._leaflet_id);
                 main.SelectCountry(layer.feature.properties.ISO2);
             }
         }
 
-        function bringLayerFront(e) {
-            e.target.bringToFront();
-        }
-
         // Main function for highlighting countries and clicking options
         function onEachFeature(feature, layer) {
       		layer.on({
-                click: sendCountries,
-      			mouseover: highlightFeature,
-      			mouseout: resetHighlight,
+                click: selectCountry,
+      			mouseover: highlightCountry,
+      			mouseout: unHighlightCountry,
       		});
 
+            // Some browsers need the country to move forwards to display border.
             if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
                 layer.on({
-                    click: bringLayerFront,
-                    mouseover: bringLayerFront,
+                    click: (e) => e.target.bringToFront(),
+                    mouseover: (e) => e.target.bringToFront(),
                   });
             }
         }
 
-        // Draw map of countries with energy
-        this.geojson = L.geoJson(this.europe_map_data, {
+        // Draw map of countries with color
+        this.geojson = L.geoJson(europe_map_data, {
             style: style_country,
             onEachFeature: onEachFeature
         }).addTo(this.map);
-
-        this.legend = L.control({position: 'bottomright'});
-
-        this.legend.onAdd = function (map) {
-            const N = 10; // Number of squares
-            grades = [];
-            for (var j = 0; j <= N; j++) {
-                // Logarithmic scale: grades.push(Math.round(minimum*((maximum/minimum)**(j/N))/100)*100);
-                grades.push(Math.round((minimum+j*(maximum-minimum)/N)/100)*100)
-            };
-
-        var div = L.DomUtil.create('div', 'info legend'),
-          grades,
-          labels = [],
-          from, to;
-
-        // loop through our density intervals and generate a label with a colored square for each interval
-        for (var i = 0; i < grades.length; i++) {
-            from = grades[i];
-            to = grades[i + 1];
-            labels.push(
-        				'<i style="background:' + MapAttributes.getColorScale(from, minimum, maximum) + '"></i> ' +
-        				from + (to ? '&ndash;' + to : '+'));
-        }
-
-            div.innerHTML = labels.join('</br>');
-            return div;
-        };
-
-        this.legend.addTo(this.map);
     }
 
-    getColorScale(d, min, max) {
-        let linearScale = d3.scaleLinear()
-                        .domain([min, (min+max)/2, max])
-                        .range(['#ffed7e', '#f09c31', '#4c080f']);
-        return linearScale(d)
-    }
-
+    // Called from the main function with the new data that should be displayed on map.
     updateMap(data) {
-            const MapAttributes = this;
+        this.updateData(data);
 
-          // Get months for each entry
-            const data_month = data.map(x => ({...x, Month: new Date(x.Date).getMonth()}));
+        this.geojson.setStyle((feat) =>{ return {fillColor: this.colorScale(this.data[feat.properties.ISO2])}; });
 
-            const count = data_month.length
+        this.map.removeControl(this.legend);
+        this.addColorInfo();
 
-            const data_sum = data.reduce((acc, cur) => {
-                for(var key of Object.keys(cur)){
-                    acc[key] = acc[key] + cur[key] || cur[key];
-                }
-                return acc;
-            }, {})
-
-            const data_average = Object.keys(data_sum).reduce((acc, key) => {acc[key] = data_sum[key]/count; return acc; }, {})
-
-            // Get minimum and maximum values for color scale
-            var energy_copy = JSON.parse(JSON.stringify(data_average));
-            for(var z = 0; z <energy_copy.length; z++) {
-                delete energy_copy[z]['Date'];
-            }
-            const minimum = Math.min(...Object.values(energy_copy));
-            const maximum = Math.max(...Object.values(energy_copy));
-
-            function country_style(feat) {
-                    return { fillColor: MapAttributes.getColorScale(data_average[feat.properties.ISO2], minimum, maximum)};
-            }
-            this.geojson.setStyle(country_style);
-            MapAttributes.updateLegend(energy_copy);
-            MapAttributes.updateInfo(energy_copy);
-        }
-
-        updateLegend(data) {
-        const MapAttributes = this;
-        const minimum = Math.min(...Object.values(data));
-        const maximum = Math.max(...Object.values(data));
-
-        MapAttributes.map.removeControl(MapAttributes.legend);
-
-        MapAttributes.legend = L.control({position: 'bottomright'});
-
-        MapAttributes.legend.onAdd = function (map) {
-            const N = 10; // Number of squares
-            grades = [];
-            for (var j = 0; j <= N; j++) {
-                // Logarithmic scale: grades.push(Math.round(minimum*((maximum/minimum)**(j/N))/100)*100);
-
-                if (maximum > 10000){
-                    // If the maximum value is very large, round values to hundreds
-                    grades.push(Math.round((minimum+j*(maximum-minimum)/N)/100)*100)}
-                else if (maximum > 1000){
-                    // If the maximum value is medium, round values to tens
-                    grades.push(Math.round((minimum+j*(maximum-minimum)/N)/10)*10)}
-                else {
-                    // If the maximum value is small, round values to 10e-5
-                    grades.push(Math.round((minimum+j*(maximum-minimum)/N)*10000)/10000)}
-            }
-
-            var div = L.DomUtil.create('div', 'info legend'),
-            grades,
-            labels = [],
-            from, to;
-
-            // loop through our density intervals and generate a label with a colored square for each interval
-            for (var i = 0; i < grades.length; i++) {
-                from = grades[i];
-                to = grades[i + 1];
-                labels.push(
-        				'<i style="background:' + MapAttributes.getColorScale(from, minimum, maximum) + '"></i> ' +
-        				from + (to ? '&ndash;' + to : '+'));
-            }
-
-            div.innerHTML = labels.join('</br>');
-            return div;
-        };
-
-        MapAttributes.legend.addTo(this.map);
-        }
-
-        updateInfo(data){
-        const MapAttributes = this;
-        const minimum = Math.min(...Object.values(data));
-        const maximum = Math.max(...Object.values(data));
-
-        MapAttributes.map.removeControl(MapAttributes.info);
-
-        MapAttributes.info = L.control();
-
-        MapAttributes.info.onAdd = function (map) {
-        	this._div = L.DomUtil.create('div', 'info');
-        	this.update();
-        	return this._div;
-        };
-
-        MapAttributes.info.update = function (feat) {
-            const value = function(feat, maximum) {
-                if (maximum > 10000){
-                    return Math.round(data[feat.properties.ISO2]/100)*100
-                }
-                else if(maximum > 1000){
-                    return Math.round(data[feat.properties.ISO2]/10)*10
-                }
-                else {
-                    return Math.round(data[feat.properties.ISO2]*100000)/100000
-                }
-            }
-        	this._div.innerHTML = '<h4>Energy consumption</h4>' +  (feat ?
-        		'<b>' + feat.properties.NAME + '</b><br />' + value(feat, maximum) + ' MWh '
-        		: 'Hover over a state');
-            // data[feat.properties.ISO2]
-        };
-
-        MapAttributes.info.addTo(MapAttributes.map);
-        }
+        this.map.removeControl(this.info);
+        this.addTopRightInfo();
+    }
 }

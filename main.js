@@ -69,7 +69,7 @@ class Main {
     }
 
     // Called when de selecting country on the map.
-    DeSelectCountry(country){
+    DeselectCountry(country){
         this.plotObject.updatePlotRemoveCountry(country);
     }
 
