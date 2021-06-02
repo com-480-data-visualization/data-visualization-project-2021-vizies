@@ -3,14 +3,6 @@ class PeriodicPlot {
 
     constructor(svg_element_id, energy_consumption) {
 
-
-		/////////////////////////////////////////////////////////
-		/////////////// The Radar Chart Function ////////////////
-		/// mthh - 2017 /////////////////////////////////////////
-		// Inspired by the code of alangrafu and Nadieh Bremer //
-		// (VisualCinnamon.com) and modified for d3 v4 //////////
-		/////////////////////////////////////////////////////////
-
 		const max = Math.max;
 		const sin = Math.sin;
 		const cos = Math.cos;
@@ -22,9 +14,16 @@ class PeriodicPlot {
 		this.time_scale = "Month";
 
 
+
 		const RadarChart = function RadarChart(parent_selector, data, options) {
 
-			//Wraps SVG text - Taken from http://bl.ocks.org/mbostock/7555321
+
+			    /////////////////////////////////////////////////////////
+		    	////////// Inspired from the Radar Chart FUnction////////
+		    	/// Inspired by the code of alangrafu and Nadieh Bremer//
+				/////////////////////////////////////////////////////////
+
+			//Wraps SVG text
 			const wrap = (text, width) => {
 			  text.each(function() {
 					var text = d3.select(this),
@@ -82,30 +81,9 @@ class PeriodicPlot {
 			 roundStrokes: false,	//If true the area and stroke will follow a round path (cardinal-closed)
 			 color: color_func,	//Color function,
 			 format: '.2%',
-			 unit: 'MW', // And MW per capita!!
+			 unit: 'MW', // Add MW per capita!!
 			 legend: false // COuld display country names using this
 			};
-
-			// if (this.default){ //print the colours associated to each country
-			// 	console.log({
-			//     AT: cfg.color("AT"),
-		   //              BE: cfg.color("BE"),
-		   //              CH: cfg.color("CH"),
-		   //              DE: cfg.color("DE"),
-		   //              DK: cfg.color("DK"),
-		   //              ES: cfg.color("ES"),
-		   //              FR: cfg.color("FR"),
-		   //              GB: cfg.color("GB"),
-		   //              IE: cfg.color("IE"),
-		   //              IT: cfg.color("IT"),
-		   //              LU: cfg.color("LU"),
-		   //              NL: cfg.color("NL"),
-		   //              NO: cfg.color("NO"),
-		   //              PT: cfg.color("PT"),
-		   //              SE: cfg.color("SE")})
-
-			 //}
-
 
 			//Put all of the options into a variable called cfg
 			if('undefined' !== typeof options){
@@ -115,7 +93,6 @@ class PeriodicPlot {
 			}//if
 
 			//If the supplied maxValue is smaller than the actual one, replace by the max in the data
-			// var maxValue = max(cfg.maxValue, d3.max(data, function(i){return d3.max(i.map(function(o){return o.value;}))}));
 			let maxValue = 0;
 			for (let j=0; j < data.length; j++) {
 				for (let i = 0; i < data[j].axes.length; i++) {
@@ -157,12 +134,12 @@ class PeriodicPlot {
 					.attr("transform", "translate(" + (cfg.w/2 + cfg.margin.left) + "," + (cfg.h/2 + cfg.margin.top) + ")");
 
 			/////////////////////////////////////////////////////////
-			////////// Glow filter for some extra pizzazz ///////////
+			///////////////////// Glow filter ///////////////////////
 			/////////////////////////////////////////////////////////
 
 			//Filter for the outside glow
 			let filter = g.append('defs').append('filter').attr('id','glow'),
-				feGaussianBlur = filter.append('feGaussianBlur').attr('stdDeviation','2.5').attr('result','coloredBlur'),
+				//feGaussianBlur = filter.append('feGaussianBlur').attr('stdDeviation','2.5').attr('result','coloredBlur'),
 				feMerge = filter.append('feMerge'),
 				feMergeNode_1 = feMerge.append('feMergeNode').attr('in','coloredBlur'),
 				feMergeNode_2 = feMerge.append('feMergeNode').attr('in','SourceGraphic');
@@ -237,12 +214,7 @@ class PeriodicPlot {
 			const radarLine = d3.radialLine()
 				.curve(d3.curveLinearClosed)
 				.radius(d => rScale(d.value))
-				.angle((d,i) => {
-					// if (d.value == 0 ){
-					// 	console.log("heyaaa");
-					// 	console.log(d, i)
-					// 	return 0};
-					return i * angleSlice});
+				.angle((d,i) => {return i * angleSlice});
 
 			if(cfg.roundStrokes) {
 				radarLine.curve(d3.curveCardinalClosed)
@@ -253,7 +225,6 @@ class PeriodicPlot {
 				.data(data)
 				.enter().append("g")
 				.attr("class", "radarWrapper");
-
 
 			//Create the outlines
 			blobWrapper.append("path")
@@ -279,20 +250,83 @@ class PeriodicPlot {
 			return svg;
 		}//RadarChart
 
-
 			//////////////////////////////////////////////////////////////
-			//////////////////////// Set-Up //////////////////////////////
-			//////////////////////////////////////////////////////////////
-
-			var margin = { top: 100, right: 100, bottom: 100, left: 100 },
-				width = Math.min(700, window.innerWidth) - margin.left - margin.right,
-				height = Math.min(width, window.innerHeight - margin.top - margin.bottom);
-
-			//////////////////////////////////////////////////////////////
-			////////////////////////// Data and Data Fetching //////////////////////////////
+			////////////////////////// Data processing ///////////////////
 			//////////////////////////////////////////////////////////////
 
-			function month_transform(month_name){ //should do if sequence?
+			// Transforms the data in the desired format
+			function get_data(energy_consumption_data, country_list, time_scale){
+				let initial_value = {}
+				if(this.time_scale === "Month"){
+					initial_value = country_list.map(country => {
+						return {name: country,
+								axes: [{axis:"January", value:0, count:0},
+											{axis:"February", value:0, count:0},
+											{axis:"March", value:0, count:0},
+											{axis:"April", value:0, count:0},
+											{axis:"May", value:0, count:0},
+											{axis:"June", value:0, count:0},
+											{axis:"Jully", value:0, count:0},
+											{axis:"August", value:0, count:0},
+											{axis:"September", value:0, count:0},
+											{axis:"October", value:0, count:0},
+											{axis:"November", value:0, count:0},
+											{axis:"December", value:0, count:0}]
+								}//return
+							})
+					 }//if
+
+				if (this.time_scale === "Day"){
+					initial_value = country_list.map(country => {
+						return {name:country,
+								axes: [{axis:"Monday", value:0, count:0},
+											{axis:"Tuesday", value:0, count:0},
+											{axis:"Wednesday", value:0, count:0},
+											{axis:"Thursday", value:0, count:0},
+											{axis:"Friday", value:0, count:0},
+											{axis:"Saturday", value:0, count:0},
+											{axis:"Sunday", value:0, count:0}]
+										}
+					})
+				}//if
+
+				if (this.time_scale === "Hours"){
+					initial_value = country_list.map(country => {
+						return {name:country,
+								axes: [{axis:"0", value:0, count:0},
+											{axis:"1", value:0, count:0},
+											{axis:"2", value:0, count:0},
+											{axis:"3", value:0, count:0},
+											{axis:"4", value:0, count:0},
+											{axis:"5", value:0, count:0},
+											{axis:"6", value:0, count:0},
+											{axis:"7", value:0, count:0},
+											{axis:"8", value:0, count:0},
+											{axis:"9", value:0, count:0},
+											{axis:"10", value:0, count:0},
+											{axis:"11", value:0, count:0},
+											{axis:"12", value:0, count:0},
+											{axis:"13", value:0, count:0},
+											{axis:"14", value:0, count:0},
+											{axis:"15", value:0, count:0},
+											{axis:"16", value:0, count:0},
+											{axis:"17", value:0, count:0},
+											{axis:"18", value:0, count:0},
+											{axis:"19", value:0, count:0},
+											{axis:"20", value:0, count:0},
+											{axis:"21", value:0, count:0},
+											{axis:"22", value:0, count:0},
+											{axis:"23", value:0, count:0}]
+										}
+									})
+				}//if
+
+				return energy_consumption_data.reduce(reducer_maker(time_scale), initial_value) //sums up over all of the months
+				    					 .map(average) //averages per hour
+			}// getdata
+
+			// helper function
+			function month_transform(month_name){
 				const month_dic = {"January" :0,
 							"February" : 1,
 							"March":2,
@@ -309,7 +343,8 @@ class PeriodicPlot {
 				return month_dic[month_name]
 			}//month_transform
 
-			function day_transform(month_name){ //should do if sequence?
+			// helper function
+			function day_transform(month_name){
 				const day_dic = {"Monday" :0,
 							"Tuesday" : 1,
 							"Wednesday":2,
@@ -321,10 +356,19 @@ class PeriodicPlot {
 				return day_dic[month_name]
 			}//day_transform
 
-			
+			// returns the reducer function called in get_data:
+			function reducer_maker(time_scale){
+				return (accumulator, current_row) => { // accumulator is a list of dictionaries 
+					return accumulator.map(country_dic => {
+						return {name: country_dic.name, 
+								axes: country_dic.axes.map(modify_single_dictionary(country_dic.name, current_row, time_scale))}
+					})
+				}
+			}
 
+			// Adds the current row value
 			function modify_single_dictionary(country_name, current_row, time_scale){
-				//inputds a dictionary withe the keys name and axis, outputs the one transformed
+				//inputs a dictionary with the key's name and axis, outputs the transformed one
 				if(time_scale === "Month"){
 						return per_month => {
 							if(month_transform(per_month.axis)==current_row.Date.getMonth()){
@@ -357,31 +401,7 @@ class PeriodicPlot {
 					}//if
 			}//modify_single_dictionary
 
-
-			function reducer_maker(time_scale){
-				return (accumulator, current_row) => {
-					return accumulator.map(country_dic => {
-						return {name: country_dic.name, 
-								axes: country_dic.axes.map(modify_single_dictionary(country_dic.name, current_row, time_scale))}
-					})
-				}
-
-			}
-			
-			// function reducer(accumulator, current_row){
-			// 	//row is a row of energy_consumption, accumulator has the format desired for the radiar viz.
-			// 	//this calls modify_single_dictionary
-			// 	//accumulator is a list of dictionaries
-			// 	return accumulator.map(country_dic => { 
-			// 		const new_dic = {};
-			// 		new_dic["name"] = country_dic.name;
-			// 		new_dic["axes"] = country_dic.axes.map(modify_single_dictionary(country_dic.name, current_row));
-			// 		return new_dic
-			// 	  })
-			// }//reducer
-
-
-			function average(per_country){//this gives the average per hour of each month
+			function average(per_country){ // this gives the average per hour of each month
 				 const new_country = {};
 				 new_country["name"] = per_country.name;
 				 new_country["axes"] = per_country.axes.map(per_month => {
@@ -391,85 +411,14 @@ class PeriodicPlot {
 			}//average
 
 
-
-			function get_data(energy_consumption_data, country_list, time_scale){
-				// console.log(this.time_scale==="Month");
-				let initial_value = {}
-				if(this.time_scale === "Month"){
-					initial_value = country_list.map(country => {
-						return {name: country,
-								axes: [{axis:"January", value:0, count:0},
-											{axis:"February", value:0, count:0},
-											{axis:"March", value:0, count:0},
-											{axis:"April", value:0, count:0},
-											{axis:"May", value:0, count:0},
-											{axis:"June", value:0, count:0},
-											{axis:"Jully", value:0, count:0},
-											{axis:"August", value:0, count:0},
-											{axis:"September", value:0, count:0},
-											{axis:"October", value:0, count:0},
-											{axis:"November", value:0, count:0},
-											{axis:"December", value:0, count:0}]
-								}//return
-							})//map
-					 }//if
-
-				if (this.time_scale === "Day"){
-					initial_value = country_list.map(country => {
-						return {name:country,
-								axes: [{axis:"Monday", value:0, count:0},
-											{axis:"Tuesday", value:0, count:0},
-											{axis:"Wednesday", value:0, count:0},
-											{axis:"Thursday", value:0, count:0},
-											{axis:"Friday", value:0, count:0},
-											{axis:"Saturday", value:0, count:0},
-											{axis:"Sunday", value:0, count:0}]
-										}
-					})//map
-				}//if
-
-				if (this.time_scale === "Hours"){
-					initial_value = country_list.map(country => {
-						return {name:country,
-								axes: [{axis:"0", value:0, count:0},
-											{axis:"1", value:0, count:0},
-											{axis:"2", value:0, count:0},
-											{axis:"3", value:0, count:0},
-											{axis:"4", value:0, count:0},
-											{axis:"5", value:0, count:0},
-											{axis:"6", value:0, count:0},
-											{axis:"7", value:0, count:0},
-											{axis:"8", value:0, count:0},
-											{axis:"9", value:0, count:0},
-											{axis:"10", value:0, count:0},
-											{axis:"11", value:0, count:0},
-											{axis:"12", value:0, count:0},
-											{axis:"13", value:0, count:0},
-											{axis:"14", value:0, count:0},
-											{axis:"15", value:0, count:0},
-											{axis:"16", value:0, count:0},
-											{axis:"17", value:0, count:0},
-											{axis:"18", value:0, count:0},
-											{axis:"19", value:0, count:0},
-											{axis:"20", value:0, count:0},
-											{axis:"21", value:0, count:0},
-											{axis:"22", value:0, count:0},
-											{axis:"23", value:0, count:0}]
-										}
-									})//map
-				}//if
-
-				return energy_consumption_data.reduce(reducer_maker(time_scale), initial_value) //sums up over all of the months
-				    					 .map(average) //averages per hour
-			}//getdata
-
-
-
-
 			//////////////////////////////////////////////////////////////
-			////// First example /////////////////////////////////////////
-      ///// (not so much options) //////////////////////////////////
+			//////////////////////// Set-Up //////////////////////////////
 			//////////////////////////////////////////////////////////////
+
+			var margin = { top: 100, right: 100, bottom: 100, left: 100 },
+				width = Math.min(700, window.innerWidth) - margin.left - margin.right,
+				height = Math.min(width, window.innerHeight - margin.top - margin.bottom);
+
 			var radarChartOptions = {
 			  w: 350,
 			  h: 370,
@@ -486,7 +435,7 @@ class PeriodicPlot {
 
 	}//constructor
 
-
+		// Called new data (new normalization, or time filter) is received to update the plot.
 		updatePlot(newData) {
 			if(this.country_list.length == 0) {
 				this.data = newData;
@@ -499,12 +448,14 @@ class PeriodicPlot {
 			}
 		  }
 
+		// Called when new country is clicked
 		updatePlotAddCountry(country){
 			this.country_list.push(country);
 			const data = this.get_data(this.data, this.country_list, this.time_scale)
 			this.RadarChart(".graph", data, this.radarChartOptions);
 		}
 
+		// Called when country is removed
 		updatePlotRemoveCountry(country){
 			this.country_list = this.country_list.filter(c => {
 				return (c.localeCompare(country))});
@@ -517,6 +468,7 @@ class PeriodicPlot {
 			}
 		}
 
+		// Called when the time scale is udpate
 		updatePlotTimeScale(time_scale){
 			if(this.country_list.length == 0) {
 				this.time_scale = time_scale;
