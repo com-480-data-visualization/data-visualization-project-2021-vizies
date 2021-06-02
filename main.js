@@ -16,8 +16,8 @@ const GREEN_BUTTON_ID = 'green_house_gaz_button';
 
 // Button colors
 const UN_SELECTED_COLOR = 'transparent';
-const SELECTED_COLOR = '#28AFB0';
-
+const SELECTED_COLOR = '#98DFEA';
+const HOVER_COLOR = '#ADFCF9';
 
 /*
 * Main class that creates all smaller classes and handles communication between clases.
@@ -25,9 +25,6 @@ const SELECTED_COLOR = '#28AFB0';
 class Main {
     // Population data 
     // https://appsso.eurostat.ec.europa.eu/nui/submitViewTableAction.do
-
-    mapObject;
-    plotObject;
 
     // Parses used for all csv files.
     ParseData(d) {
@@ -100,12 +97,14 @@ class Main {
         this.greenButton.deSelect();
     }
 
-    // Called when one of the plot time scale buttons is pressed, set correct color and updates time scale.
-    ClickPlotTimeScaleButton(time_scale) {
-        this.monthButton.style.backgroundColor = (time_scale == 'Month') ? SELECTED_COLOR : UN_SELECTED_COLOR;
-        this.dayButton.style.backgroundColor = (time_scale == 'Day') ? SELECTED_COLOR : UN_SELECTED_COLOR;
-        this.hoursButton.style.backgroundColor = (time_scale == 'Hours') ? SELECTED_COLOR : UN_SELECTED_COLOR;
-        this.UpdateTimeScale(time_scale);
+    // Called when one of the plot time scale buttons is pressed, selects correct button and updates time scale.
+    ClickPlotTimeScaleButton(timeScaleButton) {
+        this.monthButton.deSelect();
+        this.dayButton.deSelect();
+        this.hoursButton.deSelect();
+        timeScaleButton.select();
+
+        this.UpdateTimeScale(timeScaleButton.getScaling());
     }
 
     constructor() {
@@ -119,14 +118,9 @@ class Main {
         const map_promise = d3.json(MAP_DATA_PATH)
 
         // Setup circular plot time scale buttons.
-        this.monthButton = document.getElementById("month_button");
-        this.monthButton.onclick = function() { main.ClickPlotTimeScaleButton('Month'); };
-
-        this.dayButton = document.getElementById("day_button");
-        this.dayButton.onclick = function() { main.ClickPlotTimeScaleButton('Day'); };
-
-        this.hoursButton = document.getElementById("hours_button");
-        this.hoursButton.onclick = function() { main.ClickPlotTimeScaleButton('Hours'); };
+        this.monthButton = new TimeScaleButton(main, document.getElementById('month_button'), 'Month')
+        this.dayButton = new TimeScaleButton(main, document.getElementById('day_button'), 'Day')
+        this.hoursButton = new TimeScaleButton(main, document.getElementById('hours_button'), 'Hours')
 
         // After promise.
         Promise.all([energy_consumption_promise, population_promise, GDP_promise, greeHourseGaze_promise, map_promise]).then((results) => {
@@ -134,18 +128,15 @@ class Main {
 
             // Setup energy per capita
             const energy_consumption_capita = normalizeData(this.energy_consumption, results[1]);
-            this.capitaButton = new NormalizeButton(energy_consumption_capita, document.getElementById(CAPITA_BUTTON_ID));
-            document.getElementById(CAPITA_BUTTON_ID).onclick = function() { main.ClickNormalizeButton(main.capitaButton); };
+            this.capitaButton = new NormalizeButton(this, energy_consumption_capita, document.getElementById(CAPITA_BUTTON_ID));
 
             // Setup energy per GDP
             const energy_consumption_GDP = normalizeData(this.energy_consumption, results[2]);
-            this.gdpButton = new NormalizeButton(energy_consumption_GDP, document.getElementById(GDP_BUTTON_ID));
-            document.getElementById(GDP_BUTTON_ID).onclick = function() { main.ClickNormalizeButton(main.gdpButton); };
+            this.gdpButton = new NormalizeButton(this, energy_consumption_GDP, document.getElementById(GDP_BUTTON_ID));
 
             // Setup energy based on green house gaz
             const energy_consumption_green_house_gaz = normalizeData(this.energy_consumption, results[3]);
-            this.greenButton = new NormalizeButton(energy_consumption_green_house_gaz, document.getElementById(GREEN_BUTTON_ID));
-            document.getElementById(GREEN_BUTTON_ID).onclick = function() { main.ClickNormalizeButton(main.greenButton); };
+            this.greenButton = new NormalizeButton(this, energy_consumption_green_house_gaz, document.getElementById(GREEN_BUTTON_ID));
 
             let europe_map_data = results[4];
 
@@ -158,7 +149,7 @@ class Main {
             // Create all plots and timeline.
             this.mapObject = new MapPlot(MAP_ID, this.energy_consumption, europe_map_data, this);
             this.plotObject = new PeriodicPlot(GRAPH_ID, this.energy_consumption);
-            main.ClickPlotTimeScaleButton('Month');
+            main.ClickPlotTimeScaleButton(this.monthButton);
             new Timeline(TIMELINE_ID, this.energy_consumption, this);
         })
 
@@ -222,10 +213,48 @@ class NormalizeButton {
         return this.data;
     }
 
-    constructor(data, button) {
+    constructor(main, data, button) {
+        const self = this;
         this.data = data;
         this.button = button;
         this.selected = false;
+
+        this.button.onclick = function() { main.ClickNormalizeButton(self); };
+        this.button.onmouseover = function() { this.style.backgroundColor = HOVER_COLOR; };
+        this.button.onmouseout = function() { this.style.backgroundColor = self.selected ? SELECTED_COLOR : UN_SELECTED_COLOR; };
+    }
+}
+
+/*
+* Class for time scale buttons, holds the scale that should be changed to when pressed.
+*/
+class TimeScaleButton {
+    // Get the scaling this button represents.
+    getScaling() {
+        return this.scaling;
+    }
+    
+    // Select button
+    select() {
+        this.selected = true;
+        this.button.style.backgroundColor = SELECTED_COLOR;
+    }
+
+    // Deselect button
+    deSelect() {
+        this.selected = false;
+        this.button.style.backgroundColor = UN_SELECTED_COLOR;
+    }
+
+    constructor(main, button, scaling) {
+        const self = this;
+        this.button = button;
+        this.selected = false;
+        this.scaling = scaling;
+
+        this.button.onclick = function() { main.ClickPlotTimeScaleButton(self); };
+        this.button.onmouseover = function() { this.style.backgroundColor = HOVER_COLOR; };
+        this.button.onmouseout = function() { this.style.backgroundColor = self.selected ? SELECTED_COLOR : UN_SELECTED_COLOR; };
     }
 }
 
