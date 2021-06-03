@@ -120,7 +120,6 @@ class MapPlot {
                                            zoomSnap:0.1
                                         }).setView([51, 9]).setZoom(4.3);
         
-        // SHOULD BE MOVED TO MAIN
         const color_func = {AT: "#FF0000",
                             BE: "#FF8000",
                             CH: "#FFFF00",
