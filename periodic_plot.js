@@ -118,6 +118,8 @@ class PeriodicPlot {
 			/////////////////////////////////////////////////////////
 			//////////// Create the container SVG and g /////////////
 			/////////////////////////////////////////////////////////
+			document.getElementById("directions").style.display = "none";
+
 			const parent = d3.select(parent_selector);
 
 			//Remove whatever chart with the same id/class was present before
@@ -460,7 +462,8 @@ class PeriodicPlot {
 			this.country_list = this.country_list.filter(c => {
 				return (c.localeCompare(country))});
 			if (this.country_list.length == 0){
-				d3.selectAll(".radarWrapper").remove()
+				d3.selectAll(".graph").selectAll("svg").remove()
+				document.getElementById("directions").style.display = "block";
 			}
 			else {
 				const data = this.get_data(this.data, this.country_list, this.time_scale)
