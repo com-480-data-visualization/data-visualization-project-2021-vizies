@@ -8,7 +8,9 @@
 
 Website --> [here](https://andreaepfl.github.io/) <--
 
-Process Book --> [here] <-- 
+Process Book --> [here] <--
+
+Presentation video --> [here](https://youtu.be/bUqGhWNxds0) <-- 
 
 
 [Milestone 1](#milestone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
