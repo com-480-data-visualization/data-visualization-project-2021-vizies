@@ -8,7 +8,7 @@
 
 Website --> [here](https://andreaepfl.github.io/) <--
 
-Process Book --> [here] <--
+Process Book --> [here](ViziesProcessBook.pdf) <--
 
 Presentation video --> [here](https://youtu.be/bUqGhWNxds0) <-- 
 
@@ -210,12 +210,12 @@ Once the animations are also completed, we have several ideas of what could come
 
 
 
-## Milestone 3 (4th June, 5pm)
+## Milestone 3 (5th June, 5pm)
 
 **80% of the final grade**
 
+Please check out our [presentation video](https://youtu.be/bUqGhWNxds0) !
 
-## Late policy
+Please check out our final [website](https://andreaepfl.github.io/) !
 
-- < 24h: 80% of the grade for the milestone
-- < 48h: 70% of the grade for the milestone
+Finally, check out our [porocess book](ViziesProcessBook.pdf) !
