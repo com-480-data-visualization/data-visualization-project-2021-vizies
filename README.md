@@ -13,7 +13,7 @@ Process Book --> [here](ViziesProcessBook.pdf) <--
 Presentation video --> [here](https://youtu.be/bUqGhWNxds0) <-- 
 
 
-[Milestone 1](#milestone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
+[Milestone 1](##Milestone 1) • [Milestone 2](##Milestone 2) • [Milestone 3](#milestone-3)
 
 Please Scroll down for the Mileston 2 :) 
 
@@ -203,9 +203,6 @@ Once the animations are also completed, we have several ideas of what could come
 -	The ability to ‘play’ the data over time.
 -	Add more filtering options to the time line (see only day-time data, or only weekend data etc...). Although this can partially be done with the circular graph.
 -	We have also been thinking of vizualising the data not only on a circle, but also for example on a 2D tube: the length of the tube is a month, and the day data is wrapped around the tube (one wrap around is one month). But this might be too ambitious and would perhaps not add much to the analysis….
-
-
-
 
 
 
