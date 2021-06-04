@@ -6,9 +6,13 @@
 | Jacob Bamberger | 328027 |
 | Andréa Dardanelli | 269621 |
 
+Website --> [here](https://andreaepfl.github.io/) <--
+Process Book --> [here] <-- 
+
+
 [Milestone 1](#milestone-1) • [Milestone 2](#milestone-2) • [Milestone 3](#milestone-3)
 
-Please Scroll wodn for the Mileston 2 :) 
+Please Scroll down for the Mileston 2 :) 
 
 ## Milestone 1 (23rd April, 5pm)
 
